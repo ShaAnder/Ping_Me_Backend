@@ -25,10 +25,10 @@ class AccountSerializer(serializers.ModelSerializer):
             'content', 'image', 'image_url'
         ]
 
-    def get_pfp(self, obj):
-        image = obj.user_account.image
-        # If image is a File/Image instance with a .url attribute, return that.
-        if hasattr(image, 'url'):
-            return image.url
-        # Otherwise, assume it's already a URL or a string.
-        return image
+    # def get_pfp(self, obj):
+    #     image = obj.user_account.image
+    #     # If image is a File/Image instance with a .url attribute, return that.
+    #     if hasattr(image, 'url'):
+    #         return image.url
+    #     # Otherwise, assume it's already a URL or a string.
+    #     return image

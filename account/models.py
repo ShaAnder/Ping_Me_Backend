@@ -5,13 +5,13 @@ from django.db import models
 from django.db.models.signals import post_save
 
 
-class Account(User):
+class Account(models.Model):
   """User model for accounts
 
   Args:
       User (model_baseclass): default django user model
   """
-  owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_account")
+  owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="account")
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   name = models.CharField(max_length=255, blank=True)
@@ -24,11 +24,11 @@ class Account(User):
       )
 
   
-class Meta:
-    ordering = ['-created_at']
+  class Meta:
+      ordering = ['-created_at']
 
-def __str__(self):
-    return f"{self.owner}'s account"
+  def __str__(self):
+      return f"{self.owner}"
   
 def create_account(sender, instance, created, **kwargs):
   if created:

@@ -27,7 +27,7 @@ class Server(models.Model):
   owner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="server_owner")
   #leaving on delete to protect for now as we won't want to delete every server linked to the category
   category = models.ForeignKey(ServerCategory, on_delete=models.PROTECT, related_name="server_category")
-  description = models.CharField(max_length=255, null=True)
+  description = models.CharField(max_length=255, blank=True, null=True)
   members = models.ManyToManyField(Account)
   server_image = CloudinaryField(
         'image',  
@@ -39,6 +39,8 @@ class Server(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
 
+  def __str__(self):
+    return self.name
 
 class Channel(models.Model):
     # we want to get our choices for the chnnel
