@@ -41,7 +41,13 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
+    'cloudinary',
+    'rest_framework',
+
+    "account",
+    "server",
 ]
 
 MIDDLEWARE = [
@@ -53,6 +59,16 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+CLOUDINARY_STORAGE = {
+    'cloud_name': os.environ.get('CLOUDINARY_CLOUD_NAME'),  
+    'api_key': os.environ.get('CLOUDINARY_API_KEY'),        
+    'api_secret': os.environ.get('CLOUDINARY_API_SECRET'),
+    'secure': True, 
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+DEFAULT_CHARSET = 'utf-8'
 
 ROOT_URLCONF = "guild_meet_api.urls"
 
