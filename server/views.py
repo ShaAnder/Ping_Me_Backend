@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.response import Response
 
 from .models import Server
@@ -21,6 +21,9 @@ class ServerListViewSet(viewsets.ViewSet):
     by_user = request.query_params.get("by_user") == "true"
     mutual_with = request.query_params.get("mutual_with")
     by_serverid = request.query_params.get("by_serverid")
+
+    if by_user and not request.user.is_authenticated:
+      raise AuthenticationFailed()
 
     if category:
       self.queryset = self.queryset.filter(category__name=category)
