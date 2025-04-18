@@ -16,7 +16,32 @@ class ServerListViewSet(viewsets.ViewSet):
 
   def list(self, request):
     category = request.query_params.get("category")
+    qty = request.query_params.get("qty")
+    by_user = request.query_params.get("by_user") == "true"
+    mutual_with = request.query_params.get("mutual_with")
+
     if category:
       self.queryset = self.queryset.filter(category__name=category)
+
+    if qty:
+      self.queryset = self.queryset[: int(qty)]
+
+    if by_user:
+      user_id = request.user.id
+      self.queryset = self.queryset.filter(members=user_id)
+
+    # testing mutual servers
+    if mutual_with:
+      try:
+          other_user_id = int(mutual_with)
+          self.queryset = self.queryset.filter(
+              members=request.user.id
+          ).filter(
+              members=other_user_id
+          )
+      except ValueError:
+          return Response({"error": "Invalid mutual_with user ID"}, status=400)
+
+
     serializer = ServerSerializer(self.queryset, many=True)
     return Response(serializer.data)
