@@ -46,7 +46,7 @@ class Server(models.Model):
   updated_at = models.DateTimeField(auto_now=True)
 
   def __str__(self):
-    return self.name
+    return f"[{self.category}]: [{self.id}] - {self.name}"
 
 class Channel(models.Model):
     # we want to get our choices for the chnnel

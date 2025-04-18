@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from .models import Server
@@ -19,6 +20,7 @@ class ServerListViewSet(viewsets.ViewSet):
     qty = request.query_params.get("qty")
     by_user = request.query_params.get("by_user") == "true"
     mutual_with = request.query_params.get("mutual_with")
+    by_serverid = request.query_params.get("by_serverid")
 
     if category:
       self.queryset = self.queryset.filter(category__name=category)
@@ -41,7 +43,14 @@ class ServerListViewSet(viewsets.ViewSet):
           )
       except ValueError:
           return Response({"error": "Invalid mutual_with user ID"}, status=400)
-
+      
+    if by_serverid:
+      try:
+          self.queryset = self.queryset.filter(id=by_serverid)
+          if not self.queryset.exists():
+            raise ValidationError(detail=f"Server with id {by_serverid} not found")
+      except ValueError:
+        raise ValidationError(detail=f"Server with id {by_serverid} not found")
 
     serializer = ServerSerializer(self.queryset, many=True)
     return Response(serializer.data)
