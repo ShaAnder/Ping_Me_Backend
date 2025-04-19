@@ -32,12 +32,12 @@ class ServerListViewSet(viewsets.ViewSet):
     if category:
       self.queryset = self.queryset.filter(category__name=category)
 
-    if qty:
-      self.queryset = self.queryset[: int(qty)]
-
     if by_user:
       user_id = request.user.id
       self.queryset = self.queryset.filter(members=user_id)
+
+    if qty:
+      self.queryset = self.queryset[: int(qty)]
 
     if with_num_members:
       self.queryset = self.queryset.annotate(num_members=Count("members"))
