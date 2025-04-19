@@ -1,3 +1,4 @@
+from django.db import transaction
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
@@ -43,21 +44,21 @@ class ServerSerializer(serializers.ModelSerializer):
         if request and not validated_data.get("owner"):
             validated_data["owner"] = request.user
 
-        server = Server.objects.create(**validated_data)
-
-        # Create default "general" text and voice channels
-        Channel.objects.create(
-            name="general",
-            type=Channel.text,
-            server=server,
-            owner=request.user,
-            description="General text chat"
-        )
-        Channel.objects.create(
-            name="general",
-            type=Channel.voice,
-            server=server,
-            owner=request.user
-        )
+        with transaction.atomic():  # Enforce atomicity
+            server = Server.objects.create(**validated_data)
+            
+            Channel.objects.create(
+                name="general",
+                type=Channel.text,
+                server=server,
+                owner=request.user,
+                description="General text chat"
+            )
+            Channel.objects.create(
+                name="general",
+                type=Channel.voice,
+                server=server,
+                owner=request.user
+            )
 
         return server
