@@ -7,6 +7,7 @@ click==8.1.8
 cloudinary==1.44.0
 colorama==0.4.6
 dj-database-url==2.3.0
+dj-rest-auth==7.0.1
 Django==5.2
 django-cloudinary-storage==0.3.0
 django-cors-headers==4.7.0
@@ -26,6 +27,7 @@ pillow==11.2.1
 platformdirs==4.3.7
 postgres==4.0
 psycopg2==2.9.10
+psycopg2-binary==2.9.10
 psycopg2-pool==1.2
 pycodestyle==2.13.0
 pyflakes==3.3.2

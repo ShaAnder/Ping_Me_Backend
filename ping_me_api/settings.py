@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'dj_rest_auth.registration',
     'corsheaders',
+    'dj_rest_auth'
 
     "account",
     "server",
