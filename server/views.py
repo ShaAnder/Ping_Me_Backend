@@ -1,9 +1,11 @@
+from django.db.models import Count
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.response import Response
 
 from .models import Server
+from .schema import server_list_docs
 from .serializers import ServerSerializer
 
 # we're opting for building a viewset instead of building each endpoint out, then
@@ -15,12 +17,16 @@ class ServerListViewSet(viewsets.ViewSet):
 
   queryset = Server.objects.all()
 
+  @server_list_docs
   def list(self, request):
     category = request.query_params.get("category")
     qty = request.query_params.get("qty")
     by_user = request.query_params.get("by_user") == "true"
     mutual_with = request.query_params.get("mutual_with")
     by_serverid = request.query_params.get("by_serverid")
+
+    #non conditional queryset always display an uptodate count of number of members
+    self.queryset = self.queryset.annotate(num_members=Count("members"))
 
     if by_user and not request.user.is_authenticated:
       raise AuthenticationFailed()

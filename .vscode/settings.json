@@ -4,18 +4,20 @@
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": [
     "--line-length",
-    "119",
+    "119"
   ],
   "python.linting.enabled": true,
   "python.linting.lintOnSave": true,
   "python.linting.flake8enabled": true,
   "python.linting.flake8Args": [
     "--line-length",
-    "119",
+    "119"
   ],
   "[python]": {
     "editor.codeActionsOnSave": {
       "source.organizeImports": "explicit"
-    }
-  },
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  }
 }

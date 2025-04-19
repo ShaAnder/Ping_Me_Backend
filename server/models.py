@@ -59,7 +59,7 @@ class Channel(models.Model):
     ]
 
     name = models.CharField(max_length=100)
-    owner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="owned_channels")
+    owner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="channel_owner")
     type = models.CharField(
         max_length=5,
         choices=CHANNEL_TYPE_CHOICES,
@@ -67,7 +67,7 @@ class Channel(models.Model):
     )
 
     # for now delete the channel if the server is deleted
-    server = models.ForeignKey(Server, on_delete=models.CASCADE, related_name="server_channel")
+    server = models.ForeignKey(Server, on_delete=models.CASCADE, related_name="channel_server")
     # channel description, only applicable if channel is a text channel
     description = models.CharField(max_length=255, null=True, blank=True)
     # for auditing

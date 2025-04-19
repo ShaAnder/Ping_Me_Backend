@@ -259,7 +259,13 @@ paths:
           description: ''
   /api/server_list/select/:
     get:
-      operationId: api_server_list_select_retrieve
+      operationId: api_server_list_select_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Category of servers to retrieve
       tags:
       - api
       security:
@@ -267,7 +273,13 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Server'
+          description: ''
 components:
   schemas:
     Account:
@@ -313,6 +325,40 @@ components:
       - image_url
       - owner
       - updated_at
+    Channel:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        description:
+          type: string
+          nullable: true
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        owner:
+          type: integer
+        server:
+          type: integer
+      required:
+      - created_at
+      - id
+      - name
+      - owner
+      - server
+      - updated_at
     PatchedAccount:
       type: object
       description: Serializer to create an Account for the user
@@ -350,6 +396,69 @@ components:
           type: string
           nullable: true
           readOnly: true
+    Server:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        num_members:
+          type: integer
+          nullable: true
+          readOnly: true
+        channel_server:
+          type: array
+          items:
+            $ref: '#/components/schemas/Channel'
+          readOnly: true
+        owner:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        server_image_url:
+          type: string
+          nullable: true
+          readOnly: true
+        server_image:
+          type: string
+          format: uri
+          writeOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        category:
+          type: integer
+      required:
+      - category
+      - channel_server
+      - created_at
+      - id
+      - name
+      - num_members
+      - owner
+      - server_image_url
+      - updated_at
+    TypeEnum:
+      enum:
+      - text
+      - voice
+      type: string
+      description: |-
+        * `text` - Text
+        * `voice` - Voice
   securitySchemes:
     cookieAuth:
       type: apiKey
