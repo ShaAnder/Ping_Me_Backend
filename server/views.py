@@ -24,9 +24,7 @@ class ServerListViewSet(viewsets.ViewSet):
     by_user = request.query_params.get("by_user") == "true"
     mutual_with = request.query_params.get("mutual_with")
     by_serverid = request.query_params.get("by_serverid")
-
-    #non conditional queryset always display an uptodate count of number of members
-    self.queryset = self.queryset.annotate(num_members=Count("members"))
+    with_num_members = request.query_params.get("with_num_members") == "true"
 
     if by_user and not request.user.is_authenticated:
       raise AuthenticationFailed()
@@ -40,6 +38,9 @@ class ServerListViewSet(viewsets.ViewSet):
     if by_user:
       user_id = request.user.id
       self.queryset = self.queryset.filter(members=user_id)
+
+    if with_num_members:
+      self.queryset = self.queryset.annotate(num_members=Count("members"))
 
     # testing mutual servers
     if mutual_with:
@@ -61,5 +62,5 @@ class ServerListViewSet(viewsets.ViewSet):
       except ValueError:
         raise ValidationError(detail=f"Server with id {by_serverid} not found")
 
-    serializer = ServerSerializer(self.queryset, many=True)
+    serializer = ServerSerializer(self.queryset, many=True, context={"num_members": with_num_members})
     return Response(serializer.data)
