@@ -49,6 +49,7 @@ class Server(models.Model):
       # for auditing
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
+  is_private = models.BooleanField(default=True)
 
   def __str__(self):
     return f"[{self.category}]: [{self.id}] - {self.name}"
