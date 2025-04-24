@@ -16,11 +16,18 @@ class ServerSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.owner.username')
 
     @extend_schema_field(serializers.CharField(allow_null=True))
-    def get_server_image_url(self, obj):
-        return obj.server_image.url if obj.server_image else None
+    def get_server_image_urls(self, obj):
+        # Check for server_icon and banner_image
+        image_urls = {}
+        if obj.server_icon:
+            image_urls['server_icon_url'] = obj.server_icon.url
+        if obj.banner_image:
+            image_urls['banner_image_url'] = obj.banner_image.url
+        return image_urls
 
-    server_image_url = serializers.SerializerMethodField()
-    server_image = serializers.ImageField(write_only=True, required=False)
+    server_image_urls = serializers.SerializerMethodField()
+    server_icon = serializers.ImageField(write_only=True, required=False)
+    banner_image = serializers.ImageField(write_only=True, required=False)
 
     class Meta:
         model = Server
