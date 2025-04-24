@@ -73,4 +73,4 @@ class ServerSerializer(serializers.ModelSerializer):
 class ServerCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ServerCategory
-        fields = ['id', 'name']
+        fields = "__all__"
