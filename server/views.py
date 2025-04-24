@@ -17,7 +17,7 @@ from .serializers import ServerCategorySerializer, ServerSerializer
 class ServerListViewSet(viewsets.ViewSet):
 
   queryset = Server.objects.all()
-  permission_classes = [IsAuthenticated]
+  # permission_classes = [IsAuthenticated]
 
   @server_list_docs
   def list(self, request):
@@ -77,7 +77,7 @@ class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = ServerCategory.objects.all().order_by('name')
     serializer_class = ServerCategorySerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     # Optional: allow client to search/filter by name
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
