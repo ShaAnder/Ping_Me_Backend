@@ -1,13 +1,13 @@
 from django.db.models import Count
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Server
+from .models import Server, ServerCategory
 from .schema import server_list_docs
-from .serializers import ServerSerializer
+from .serializers import ServerCategorySerializer, ServerSerializer
 
 # we're opting for building a viewset instead of building each endpoint out, then
 # we will return the endpoint based on what parameters are passed. While doing an endpoint
@@ -66,3 +66,21 @@ class ServerListViewSet(viewsets.ViewSet):
 
     serializer = ServerSerializer(self.queryset, many=True, context={"num_members": with_num_members})
     return Response(serializer.data)
+
+class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    list:
+      Return all categories.
+
+    retrieve:
+      Return a single category by ID.
+    """
+    queryset = ServerCategory.objects.all().order_by('name')
+    serializer_class = ServerCategorySerializer
+    permission_classes = [IsAuthenticated]
+
+    # Optional: allow client to search/filter by name
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name']          # /api/categories/?search=game
+    ordering_fields = ['name']       # /api/categories/?ordering=-name
+    ordering = ['name']

@@ -69,3 +69,8 @@ class ServerSerializer(serializers.ModelSerializer):
             )
 
         return server
+    
+class ServerCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServerCategory
+        fields = ['id', 'name']
