@@ -14,6 +14,7 @@ class ServerSerializer(serializers.ModelSerializer):
     num_members = serializers.SerializerMethodField()
     channel_server = ChannelSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source='owner.owner.username')
+    category_name = serializers.CharField(source='category.name', read_only=True)
 
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_server_image_urls(self, obj):
