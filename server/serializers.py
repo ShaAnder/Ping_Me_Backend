@@ -74,3 +74,15 @@ class ServerCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ServerCategory
         fields = "__all__"
+
+    @extend_schema_field(serializers.CharField(allow_null=True))
+    def get_category_image(self, obj):
+        image = obj.category_image.image
+        # If image is a File/Image instance with a .url attribute, return that.
+        if hasattr(image, 'url'):
+            return image.url
+        # Otherwise, assume it's already a URL or a string.
+        return image
+    
+    category_icon_url = serializers.SerializerMethodField()
+    category_icon = serializers.ImageField(write_only=True, required=False)
