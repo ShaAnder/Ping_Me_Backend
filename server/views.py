@@ -1,5 +1,6 @@
 from django.db.models import Count
 from django.shortcuts import render
+from drf_spectacular.utils import extend_schema
 from rest_framework import filters, viewsets
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -76,11 +77,15 @@ class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
       Return a single category by ID.
     """
     queryset = ServerCategory.objects.all().order_by('name')
-    serializer_class = ServerCategorySerializer
-    # permission_classes = [IsAuthenticated]
 
-    # Optional: allow client to search/filter by name
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name']          # /api/categories/?search=game
-    ordering_fields = ['name']       # /api/categories/?ordering=-name
-    ordering = ['name']
+    @extend_schema(responses=ServerCategorySerializer)
+    def list(self, request):
+      serializer = ServerCategorySerializer(self.queryset, many=True)
+      return Response(serializer.data)
+
+
+    # # Optional: allow client to search/filter by name
+    # filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    # search_fields = ['name']          # /api/categories/?search=game
+    # ordering_fields = ['name']       # /api/categories/?ordering=-name
+    # ordering = ['name']
