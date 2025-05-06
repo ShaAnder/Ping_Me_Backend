@@ -15,58 +15,62 @@ from .serializers import ServerCategorySerializer, ServerSerializer
 # for every piece of data we want to return can work for larger projects it can become
 # tedius...
 
+
 class ServerListViewSet(viewsets.ViewSet):
 
-  queryset = Server.objects.all()
-  # permission_classes = [IsAuthenticated]
+    queryset = Server.objects.all()
+    # permission_classes = [IsAuthenticated]
 
-  @server_list_docs
-  def list(self, request):
-    category = request.query_params.get("category")
-    qty = request.query_params.get("qty")
-    by_user = request.query_params.get("by_user") == "true"
-    mutual_with = request.query_params.get("mutual_with")
-    by_serverid = request.query_params.get("by_serverid")
-    with_num_members = request.query_params.get("with_num_members") == "true"
+    @server_list_docs
+    def list(self, request):
+        category = request.query_params.get("category")
+        qty = request.query_params.get("qty")
+        by_user = request.query_params.get("by_user") == "true"
+        mutual_with = request.query_params.get("mutual_with")
+        by_serverid = request.query_params.get("by_serverid")
+        with_num_members = request.query_params.get("with_num_members") == "true"
 
-    if by_user and not request.user.is_authenticated:
-      raise AuthenticationFailed()
+        if by_user and not request.user.is_authenticated:
+            raise AuthenticationFailed()
 
-    if category:
-      self.queryset = self.queryset.filter(category__name=category)
+        if category:
+            self.queryset = self.queryset.filter(category__name=category)
 
-    if by_user:
-      user_id = request.user.id
-      self.queryset = self.queryset.filter(members=user_id)
+        if by_user:
+            user_id = request.user.id
+            self.queryset = self.queryset.filter(members=user_id)
 
-    if qty:
-      self.queryset = self.queryset[: int(qty)]
+        if qty:
+            self.queryset = self.queryset[: int(qty)]
 
-    if with_num_members:
-      self.queryset = self.queryset.annotate(num_members=Count("members"))
+        if with_num_members:
+            self.queryset = self.queryset.annotate(num_members=Count("members"))
 
-    # testing mutual servers
-    if mutual_with:
-      try:
-          other_user_id = int(mutual_with)
-          self.queryset = self.queryset.filter(
-              members=request.user.id
-          ).filter(
-              members=other_user_id
-          )
-      except ValueError:
-          return Response({"error": "Invalid mutual_with user ID"}, status=400)
-      
-    if by_serverid:
-      try:
-          self.queryset = self.queryset.filter(id=by_serverid)
-          if not self.queryset.exists():
-            raise ValidationError(detail=f"Server with id {by_serverid} not found")
-      except ValueError:
-        raise ValidationError(detail=f"Server with id {by_serverid} not found")
+        # testing mutual servers
+        if mutual_with:
+            try:
+                other_user_id = int(mutual_with)
+                self.queryset = self.queryset.filter(members=request.user.id).filter(
+                    members=other_user_id
+                )
+            except ValueError:
+                return Response({"error": "Invalid mutual_with user ID"}, status=400)
 
-    serializer = ServerSerializer(self.queryset, many=True, context={"num_members": with_num_members})
-    return Response(serializer.data)
+        if by_serverid:
+            try:
+                self.queryset = self.queryset.filter(id=by_serverid)
+                if not self.queryset.exists():
+                    raise ValidationError(
+                        detail=f"Server with id {by_serverid} not found"
+                    )
+            except ValueError:
+                raise ValidationError(detail=f"Server with id {by_serverid} not found")
+
+        serializer = ServerSerializer(
+            self.queryset, many=True, context={"num_members": with_num_members}
+        )
+        return Response(serializer.data)
+
 
 class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -76,13 +80,13 @@ class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     retrieve:
       Return a single category by ID.
     """
-    queryset = ServerCategory.objects.all().order_by('name')
+
+    queryset = ServerCategory.objects.all().order_by("name")
 
     @extend_schema(responses=ServerCategorySerializer)
     def list(self, request):
-      serializer = ServerCategorySerializer(self.queryset, many=True)
-      return Response(serializer.data)
-
+        serializer = ServerCategorySerializer(self.queryset, many=True)
+        return Response(serializer.data)
 
     # # Optional: allow client to search/filter by name
     # filter_backends = [filters.SearchFilter, filters.OrderingFilter]

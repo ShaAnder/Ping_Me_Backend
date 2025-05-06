@@ -31,7 +31,12 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.herokuapp.com', os.environ.get("ALLOWED_HOSTS")]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".herokuapp.com",
+    os.environ.get("ALLOWED_HOSTS"),
+]
 
 # Application definition
 
@@ -41,16 +46,15 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    'cloudinary_storage',
-    'django.contrib.staticfiles',
-    'cloudinary',
-    'rest_framework',
-    'drf_spectacular',
-    'dj_rest_auth.registration',
-    'corsheaders',
-    'dj_rest_auth',
+    "cloudinary_storage",
+    "django.contrib.staticfiles",
+    "cloudinary",
+    "rest_framework",
+    "drf_spectacular",
+    "dj_rest_auth.registration",
+    "corsheaders",
+    "dj_rest_auth",
     "rest_framework.authtoken",
-
     "account",
     "server",
 ]
@@ -58,7 +62,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -68,23 +72,22 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    origin for origin in [
-        os.environ.get('CLIENT_ORIGIN'),
-        os.environ.get('CLIENT_ORIGIN_DEV')
-    ] if origin
+    origin
+    for origin in [os.environ.get("CLIENT_ORIGIN"), os.environ.get("CLIENT_ORIGIN_DEV")]
+    if origin
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CLOUDINARY_STORAGE = {
-    'cloud_name': os.environ.get('CLOUDINARY_CLOUD_NAME'),  
-    'api_key': os.environ.get('CLOUDINARY_API_KEY'),        
-    'api_secret': os.environ.get('CLOUDINARY_API_SECRET'),
-    'secure': True, 
+    "cloud_name": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "api_key": os.environ.get("CLOUDINARY_API_KEY"),
+    "api_secret": os.environ.get("CLOUDINARY_API_SECRET"),
+    "secure": True,
 }
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-DEFAULT_CHARSET = 'utf-8'
+DEFAULT_CHARSET = "utf-8"
 
 ROOT_URLCONF = "ping_me_api.urls"
 
@@ -109,17 +112,15 @@ WSGI_APPLICATION = "ping_me_api.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if 'DEV' in os.environ:
+if "DEV" in os.environ:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 else:
-    DATABASES = {
-        'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
-    }
+    DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
 
 # LOGGING = {
 #     'version': 1,
@@ -170,9 +171,9 @@ USE_TZ = True
 
 
 # Static files configuration
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -180,20 +181,18 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     # authenticate our users
-    'DEFAULT_AUTHENTICATION_CLASSES' : [
-        'rest_framework.authentication.SessionAuthentication'
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication"
     ],
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Ping Me API',
-    'DESCRIPTION': 'API for the backend of the ping me api a lightweight discord clone!',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': True,
+    "TITLE": "Ping Me API",
+    "DESCRIPTION": "API for the backend of the ping me api a lightweight discord clone!",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": True,
     # OTHER SETTINGS
 }

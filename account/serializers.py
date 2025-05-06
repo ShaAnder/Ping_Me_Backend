@@ -8,7 +8,7 @@ from .models import Account
 class AccountSerializer(serializers.ModelSerializer):
     """Serializer to create an Account for the user"""
 
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source="owner.username")
 
     image = serializers.ImageField(write_only=True, required=False)
     image_url = serializers.SerializerMethodField()
@@ -23,6 +23,13 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = [
-            'id', 'owner', 'created_at', 'updated_at', 'name', 'location',
-            'content', 'image', 'image_url'
+            "id",
+            "owner",
+            "created_at",
+            "updated_at",
+            "name",
+            "location",
+            "content",
+            "image",
+            "image_url",
         ]

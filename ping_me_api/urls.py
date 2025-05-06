@@ -20,7 +20,8 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
-from server.views import ServerListViewSet, ServerCategoryViewSet
+from server.views import ServerCategoryViewSet, ServerListViewSet
+from webchat.consumer import MyConsumer
 
 router = DefaultRouter()
 router.register("api/server_list/select", ServerListViewSet)
@@ -31,11 +32,11 @@ router.register(r"api/categories", ServerCategoryViewSet, basename="categories")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    #view the docs
+    # view the docs
     path("api/docs/schema/", SpectacularAPIView.as_view(), name="schema"),
-    #view the ui
+    # view the ui
     path("api/docs/schema/ui/", SpectacularSwaggerView.as_view()),
-
-    path('', include('account.urls')),
+    path("", include("account.urls")),
 ] + router.urls
 
+websocket_urlpatterns =[path("ws/test", MyConsumer.as_asgi())]

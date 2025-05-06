@@ -14,15 +14,18 @@ class AccountList(ListAPIView):
     """
     List all accounts.
     """
+
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
 
 class AccountDetail(RetrieveUpdateAPIView):
     """
     Retrieve or update a Account.
     Only the owner can update.
     """
+
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
