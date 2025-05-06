@@ -114,14 +114,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
-ASGI_APPLICATION = 'ping_me_api.asgi.application'
-
-# Use InMemoryChannelLayer for local dev
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # For local dev (can replace with Redis later)
-    }
-}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
