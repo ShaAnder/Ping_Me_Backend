@@ -55,8 +55,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "dj_rest_auth",
     "rest_framework.authtoken",
+    'channels',
     "account",
     "server",
+    "webchat",
 ]
 
 MIDDLEWARE = [
@@ -114,6 +116,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
+ASGI_APPLICATION = "ping_me_api.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get("REDIS_URL")],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
