@@ -1,5 +1,6 @@
 from channels.generic.websocket import WebsocketConsumer
 
+
 class MyConsumer(WebsocketConsumer):
     groups = ["broadcast"]
 
@@ -23,3 +24,4 @@ class MyConsumer(WebsocketConsumer):
 
     def disconnect(self, close_code):
         # Called when the socket closes
+        pass
