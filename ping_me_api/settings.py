@@ -114,7 +114,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
-ASGI_APPLICATION = 'your_project.asgi.application'
+ASGI_APPLICATION = 'ping_me_api.asgi.application'
 
 # Use InMemoryChannelLayer for local dev
 CHANNEL_LAYERS = {
