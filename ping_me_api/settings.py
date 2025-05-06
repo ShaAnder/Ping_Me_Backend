@@ -77,6 +77,13 @@ CORS_ALLOWED_ORIGINS = [
     if origin
 ]
 
+# Dynamically add dev client origin (e.g. ngrok) to ALLOWED_HOSTS
+client_origin_dev = os.environ.get("CLIENT_ORIGIN_DEV")
+if client_origin_dev:
+    from urllib.parse import urlparse
+    parsed = urlparse(client_origin_dev)
+    ALLOWED_HOSTS.append(parsed.hostname)
+
 CORS_ALLOW_CREDENTIALS = True
 
 CLOUDINARY_STORAGE = {

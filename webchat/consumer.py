@@ -7,6 +7,7 @@ class MyConsumer(WebsocketConsumer):
     def connect(self):
         # Accept connection with no subprotocol
         self.accept()
+        print("WebSocket request headers:", self.scope.get("headers"))
 
     def receive(self, text_data=None, bytes_data=None):
         # Echo the received text data back to the client
