@@ -1,0 +1,1 @@
+uvicorn ping_me_api.asgi:application --port 8000 --workers 4 --log-level debug --reload
