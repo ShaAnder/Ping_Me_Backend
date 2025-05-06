@@ -5,23 +5,16 @@ class MyConsumer(WebsocketConsumer):
     groups = ["broadcast"]
 
     def connect(self):
-        # Called on connection.
-        # To accept the connection call:
+        # Accept connection with no subprotocol
         self.accept()
-        # Or accept the connection and specify a chosen subprotocol.
-        # A list of subprotocols specified by the connecting client
-        # will be available in self.scope['subprotocols']
-        self.accept("subprotocol")
-        # To reject the connection, call:
-        # self.close()
 
     def receive(self, text_data=None, bytes_data=None):
-        # Called with either text_data or bytes_data for each frame
-        # You can call:
-        self.send(text_data="Hello world!")
-        # Want to force-close the connection? Call:
-        self.close()
+        # Echo the received text data back to the client
+        if text_data:
+            self.send(text_data=f"Received: {text_data}")
+        elif bytes_data:
+            self.send(bytes_data=bytes_data)
 
     def disconnect(self, close_code):
-        # Called when the socket closes
+        # Handle disconnection logic here
         pass
