@@ -39,4 +39,4 @@ urlpatterns = [
     path("", include("account.urls")),
 ] + router.urls
 
-websocket_urlpatterns =[path("ws/test", MyConsumer.as_asgi())]
+websocket_urlpatterns =[path("ws/test/", MyConsumer.as_asgi())]
