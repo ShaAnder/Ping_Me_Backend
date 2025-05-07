@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
-import ssl
 from pathlib import Path
 
 import dj_database_url
@@ -119,15 +118,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
 ASGI_APPLICATION = "ping_me_api.asgi.application"
 
-REDIS_URL = os.environ.get("REDIS_TLS_URL", "redis://127.0.0.1:6379/0")
+REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            "hosts": [REDIS_URL],
         },
-        "ROUTING": "chat.routing.channel_routing",
     },
 }
 
@@ -144,22 +142,22 @@ if "DEV" in os.environ:
 else:
     DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#         },
+#     },
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
