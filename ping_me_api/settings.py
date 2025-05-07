@@ -129,7 +129,6 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             "hosts": [{
                 "address": REDIS_URL,
-                # Heroku Redis may use rediss:// (SSL), disable SSL cert verification if needed
                 "options": {
                     "ssl_cert_reqs": None if PARSED_URL.scheme == "rediss" else "required",
                 },
