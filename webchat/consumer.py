@@ -1,7 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 
 
-class ChatConsumer(WebsocketConsumer):
+class MyConsumer(WebsocketConsumer):
     groups = ["broadcast"]
 
     def connect(self):
