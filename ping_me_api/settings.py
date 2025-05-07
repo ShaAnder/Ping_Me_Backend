@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 import dj_database_url
 from dotenv import load_dotenv
@@ -115,19 +116,29 @@ TEMPLATES = [
     },
 ]
 
-# Use Heroku's Redis URL if available, otherwise use the default
-REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
+# Get the REDIS_URL from environment variables or default to localhost for development
+redis_url = os.environ.get("REDIS_URL", "rediss://:password@localhost:6379")
 
-# Split the REDIS_URL into host and port
-redis_url = REDIS_URL.replace("redis://", "")  # Remove 'redis://' part
-redis_host, redis_port = redis_url.split(":")
-redis_port = int(redis_port)  # Convert port to integer
+# Parse the URL
+parsed_redis_url = urlparse(redis_url)
 
+# Extract host, port, and password (if available)
+redis_host = parsed_redis_url.hostname
+redis_port = parsed_redis_url.port
+redis_password = parsed_redis_url.password
+
+# For SSL (rediss://) connections, we need to ensure the connection is secure
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(redis_host, redis_port)],  # Correctly format as tuple
+            "hosts": [
+                {
+                    "address": (redis_host, redis_port),
+                    "password": redis_password,
+                    "ssl": True,  # Enable SSL for secure connection
+                }
+            ],
         },
     },
 }
