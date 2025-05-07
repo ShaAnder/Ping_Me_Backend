@@ -17,6 +17,7 @@ cryptography==44.0.3
 dj-database-url==2.3.0
 dj-rest-auth==7.0.1
 Django==5.2
+daphne==3.0.2
 django-channels==0.7.0
 django-cloudinary-storage==0.3.0
 django-cors-headers==4.7.0

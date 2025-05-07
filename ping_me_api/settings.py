@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 import dj_database_url
 from dotenv import load_dotenv
@@ -118,13 +119,21 @@ TEMPLATES = [
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
 ASGI_APPLICATION = "ping_me_api.asgi.application"
 
+# Parse REDIS_URL
 REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")
+PARSED_URL = urlparse(REDIS_URL)
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [REDIS_URL],
+            "hosts": [{
+                "address": REDIS_URL,
+                # Heroku Redis may use rediss:// (SSL), disable SSL cert verification if needed
+                "options": {
+                    "ssl_cert_reqs": None if PARSED_URL.scheme == "rediss" else "required",
+                },
+            }],
         },
     },
 }
