@@ -116,17 +116,6 @@ TEMPLATES = [
     },
 ]
 
-# Get the REDIS_URL from environment variables or default to localhost for development
-redis_url = os.environ.get("REDIS_URL")
-
-# Parse the URL
-parsed_redis_url = urlparse(redis_url)
-
-# Extract host, port, and password (if available)
-redis_host = parsed_redis_url.hostname
-redis_port = parsed_redis_url.port
-redis_password = parsed_redis_url.password
-
 # For SSL (rediss://) connections, we need to ensure the connection is secure
 CHANNEL_LAYERS = {
     "default": {
@@ -134,8 +123,7 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             "hosts": [
                 {
-                    "address": (redis_host, redis_port),
-                    "password": redis_password,
+                    "url": os.environ.get("REDIS_URL"),
                     "ssl": True,  # Enable SSL for secure connection
                 }
             ],
