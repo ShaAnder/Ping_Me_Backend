@@ -4,13 +4,20 @@ from channels.generic.websocket import WebsocketConsumer
 class MyConsumer(WebsocketConsumer):
     groups = ["broadcast"]
 
-    async def connect(self):
-        print("WebSocket: CONNECTED")
-        await self.accept()
+    def connect(self):
+        # Called on connection.
+        # To accept the connection call:
+        self.accept()
+        # Or accept the connection and specify a chosen subprotocol.
+        # A list of subprotocols specified by the connecting client
+        # will be available in self.scope['subprotocols']
 
-    async def receive(self, text_data):
-        print(f"WebSocket: RECEIVED message {text_data}")
+    def receive(self, text_data=None, bytes_data=None):
+        # Called with either text_data or bytes_data for each frame
+        # You can call:
         self.send(text_data="Hello world!")
 
-    async def disconnect(self, close_code):
-        print(f"WebSocket: DISCONNECTED with code {close_code}")
+
+    def disconnect(self, close_code):
+        # Called when the socket closes
+        pass

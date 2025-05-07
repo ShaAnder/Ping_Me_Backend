@@ -1,3 +1,2 @@
 release: python manage.py makemigrations && python manage.py migrate
-web: gunicorn ping_me_api.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
-
+web: uvicorn ping_me_api.asgi:application --host=0.0.0.0 --port=${PORT:-8000} --workers=4 --log-level=info
