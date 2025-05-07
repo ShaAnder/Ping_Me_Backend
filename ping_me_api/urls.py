@@ -21,7 +21,6 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
 from server.views import ServerCategoryViewSet, ServerListViewSet
-from webchat.consumer import MyConsumer
 
 router = DefaultRouter()
 router.register("api/server_list/select", ServerListViewSet)
@@ -39,4 +38,3 @@ urlpatterns = [
     path("", include("account.urls")),
 ] + router.urls
 
-websocket_urlpatterns =[path("ws/test/", MyConsumer.as_asgi())]

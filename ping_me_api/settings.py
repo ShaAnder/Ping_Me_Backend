@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
-from urllib.parse import urlparse
 
 import dj_database_url
 from dotenv import load_dotenv
@@ -116,26 +115,25 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "ping_me_api.wsgi.application"
-ASGI_APPLICATION = "ping_me_api.asgi.application"
+# Use Heroku's Redis URL if available, otherwise use the default
+REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
 
-# Parse REDIS_URL
-REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")
-PARSED_URL = urlparse(REDIS_URL)
+# Split the REDIS_URL into host and port
+redis_url = REDIS_URL.replace("redis://", "")  # Remove 'redis://' part
+redis_host, redis_port = redis_url.split(":")
+redis_port = int(redis_port)  # Convert port to integer
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [{
-                "address": REDIS_URL,
-                "options": {
-                    "ssl_cert_reqs": None if PARSED_URL.scheme == "rediss" else "required",
-                },
-            }],
+            "hosts": [(redis_host, redis_port)],  # Correctly format as tuple
         },
     },
 }
+
+WSGI_APPLICATION = "ping_me_api.wsgi.application"
+ASGI_APPLICATION = "ping_me_api.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

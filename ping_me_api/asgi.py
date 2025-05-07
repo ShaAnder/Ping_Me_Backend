@@ -14,15 +14,16 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ping_me_api.settings")
+
+# Load the Django ASGI application early to ensure models are ready
 django_application = get_asgi_application()
 
-# we need to import this AFTER the defaults have been set
-# comment prevents linter complaint and auto moving to top
-from . import urls  # noqa isort:skip
+# Import after Django setup
+from .routing import websocket_urlpatterns
 
-application = ProtocolTypeRouter(
-    {
-        "http": django_application,
-        "websocket": AuthMiddlewareStack(URLRouter(urls.websocket_urlpatterns)),
-    }
-)
+application = ProtocolTypeRouter({
+    "http": django_application,
+    "websocket": AuthMiddlewareStack(
+        URLRouter(websocket_urlpatterns)
+    ),
+})
