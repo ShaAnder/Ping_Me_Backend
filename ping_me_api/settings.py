@@ -117,7 +117,7 @@ TEMPLATES = [
 ]
 
 # Get the REDIS_URL from environment variables or default to localhost for development
-redis_url = os.environ.get("REDIS_URL", "rediss://:password@localhost:6379")
+redis_url = os.environ.get("REDIS_URL")
 
 # Parse the URL
 parsed_redis_url = urlparse(redis_url)
