@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import ssl
 from pathlib import Path
 
 import dj_database_url
@@ -118,13 +119,16 @@ TEMPLATES = [
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
 ASGI_APPLICATION = "ping_me_api.asgi.application"
 
-REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")
+REDIS_URL = os.environ.get("REDIS_TLS_URL", "redis://127.0.0.1:6379/0")
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [REDIS_URL],
+            "connection_kwargs": {
+                "ssl_cert_reqs": ssl.CERT_NONE  # Temporarily disable certificate verification
+            }
         },
     },
 }
