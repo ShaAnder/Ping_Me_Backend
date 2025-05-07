@@ -125,10 +125,9 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [REDIS_URL],
-            "connection_kwargs": {
-                "ssl_cert_reqs": ssl.CERT_NONE  # Temporarily disable certificate verification
-            }
+            "hosts": [os.environ.get("REDIS_TLS_URL")],
+            "ssl": True,  # Explicit SSL enable
+            "ssl_options": {"ssl_cert_reqs": ssl.CERT_NONE},
         },
     },
 }
