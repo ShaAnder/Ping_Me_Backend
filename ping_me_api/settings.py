@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import ssl
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -127,6 +128,10 @@ redis_host = parsed_redis_url.hostname
 redis_port = parsed_redis_url.port
 redis_password = parsed_redis_url.password
 
+ssl_context = ssl.SSLContext()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+
 # For SSL (rediss://) connections, we need to ensure the connection is secure
 CHANNEL_LAYERS = {
     "default": {
@@ -136,7 +141,7 @@ CHANNEL_LAYERS = {
                 {
                     "address": (redis_host, redis_port),
                     "password": redis_password,
-                    "ssl_cert_reqs": None,
+                    "ssl": ssl_context,
                 }
             ],
         },
