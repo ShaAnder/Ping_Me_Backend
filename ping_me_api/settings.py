@@ -136,7 +136,7 @@ CHANNEL_LAYERS = {
                 {
                     "address": (redis_host, redis_port),
                     "password": redis_password,
-                    "ssl": False,  # Disable SSL, as we don't have a custom domain / SSL cert
+                    "ssl": True,  # Enable SSL for secure connection
                 }
             ],
         },
