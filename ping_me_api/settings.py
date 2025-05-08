@@ -76,8 +76,7 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com",
-    "https://ping-me-pp5-frontend-c34a5313765d.herokuapp.com"  
+    'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com'
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -85,6 +84,9 @@ CORS_ALLOWED_ORIGINS = [
     for origin in [os.environ.get("CLIENT_ORIGIN"), os.environ.get("CLIENT_ORIGIN_DEV")]
     if origin
 ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
 
 # Dynamically add dev client origin (e.g. ngrok) to ALLOWED_HOSTS
 client_origin_dev = os.environ.get("CLIENT_ORIGIN_DEV")
