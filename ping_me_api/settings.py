@@ -40,6 +40,9 @@ ALLOWED_HOSTS = [
     os.environ.get("ALLOWED_HOSTS"),
 ]
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -73,6 +76,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com',
 ]
 
 CORS_ALLOWED_ORIGINS = [

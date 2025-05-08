@@ -64,7 +64,7 @@ class ServerSerializer(serializers.ModelSerializer):
                 description="General text chat",
             )
             Channel.objects.create(
-                name="general", type=Channel.voice, server=server, owner=request.user
+                name="vc gener", type=Channel.voice, server=server, owner=request.user
             )
 
         return server
