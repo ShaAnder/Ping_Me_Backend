@@ -15,7 +15,7 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         # Called with either text_data or bytes_data for each frame
         # You can call:
-        self.send(text_data="Hello world!")
+        self.send(text_data=text_data)
 
 
     def disconnect(self, close_code):
