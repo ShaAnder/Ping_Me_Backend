@@ -1,4 +1,4 @@
-import json
+
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
@@ -17,7 +17,7 @@ class ChatConsumer(WebsocketConsumer):
             self.channel_name,
         )
 
-    def receive(self, content):
+    def receive_json(self, content):
         async_to_sync(self.channel_layer.group_send)(
             self.server_id, 
             {
