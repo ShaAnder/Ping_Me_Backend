@@ -1,34 +1,33 @@
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import JsonWebsocketConsumer
 
 
-class ChatConsumer(WebsocketConsumer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.server_id = "testserver"
+class ChatConsumer(JsonWebsocketConsumer):
+    # Optionally auto-join a group on connect (Channels 3 will do this for 
+    # any group names in `groups` if defined).
+    # groups = ["chat"]
 
     def connect(self):
-        print("WebSocket connected:", self.channel_name)
         self.accept()
-        async_to_sync(self.channel_layer.group_add)(
-            self.server_id,
-            self.channel_name,
-        )
+        # Manually add to group if not using the `groups` attribute:
+        async_to_sync(self.channel_layer.group_add)("chat", self.channel_name)
 
-    def receive_json(self, content):
-        print("Received message from client:", content)
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)("chat", self.channel_name)
+
+    def receive_json(self, content, **kwargs):
+        # Expecting {"message": "hello"} from client
+        message = content.get("message", "")
+        # Broadcast to group with type 'chat.message'
         async_to_sync(self.channel_layer.group_send)(
-            self.server_id,
+            "chat",
             {
-                "type": "chat.message",
-                "new_message": content["message"],
-            },
+                "type": "chat.message",   # event type -> method chat_message
+                "message": message,
+            }
         )
 
     def chat_message(self, event):
-        print("Broadcasting message to client:", event)
-        self.send_json(event)
-
-    def disconnect(self, close_code):
-        print("WebSocket disconnected:", self.channel_name)
+        # Receives {'type': 'chat.message', 'message': ...}
+        # Send JSON back to WebSocket
+        self.send_json({"message": event["message"]})
