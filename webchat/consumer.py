@@ -1,5 +1,3 @@
-
-
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
@@ -11,6 +9,7 @@ class ChatConsumer(WebsocketConsumer):
         self.server_id = "testserver"
 
     def connect(self):
+        print("WebSocket connected:", self.channel_name)
         self.accept()
         async_to_sync(self.channel_layer.group_add)(
             self.server_id,
@@ -18,16 +17,18 @@ class ChatConsumer(WebsocketConsumer):
         )
 
     def receive_json(self, content):
+        print("Received message from client:", content)
         async_to_sync(self.channel_layer.group_send)(
-            self.server_id, 
+            self.server_id,
             {
-                "type": "chat.message", 
-                "new_message": content["message"]
+                "type": "chat.message",
+                "new_message": content["message"],
             },
         )
 
     def chat_message(self, event):
+        print("Broadcasting message to client:", event)
         self.send_json(event)
 
     def disconnect(self, close_code):
-        pass
+        print("WebSocket disconnected:", self.channel_name)
