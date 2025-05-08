@@ -1,23 +1,32 @@
+import json
+
+from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
 
 class ChatConsumer(WebsocketConsumer):
-    groups = ["broadcast"]
+
+    def __init__(self, *args, **kwargs):
+        self.server_id = "testserver"
 
     def connect(self):
-        # Called on connection.
-        # To accept the connection call:
         self.accept()
-        # Or accept the connection and specify a chosen subprotocol.
-        # A list of subprotocols specified by the connecting client
-        # will be available in self.scope['subprotocols']
+        async_to_sync(self.channel_layer.group_add)(
+            self.server_id,
+            self.channel_name,
+        )
 
-    def receive(self, text_data=None, bytes_data=None):
-        # Called with either text_data or bytes_data for each frame
-        # You can call:
-        self.send(text_data=text_data)
+    def receive(self, content):
+        async_to_sync(self.channel_layer.group_send)(
+            self.server_id, 
+            {
+                "type": "chat.message", 
+                "new_message": content["message"]
+            },
+        )
 
+    def chat_message(self, event):
+        self.send_json(event)
 
     def disconnect(self, close_code):
-        # Called when the socket closes
         pass
