@@ -7,6 +7,7 @@ from channels.generic.websocket import WebsocketConsumer
 class ChatConsumer(WebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.server_id = "testserver"
 
     def connect(self):
