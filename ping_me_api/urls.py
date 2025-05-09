@@ -21,6 +21,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
 from server.views import ServerCategoryViewSet, ServerListViewSet
+from webchat.views import MessageViewSet
 
 router = DefaultRouter()
 router.register("api/server_list/select", ServerListViewSet)
@@ -28,6 +29,7 @@ router.register("api/server_list/select", ServerListViewSet)
 
 router.register(r"api/servers", ServerListViewSet, basename="servers")
 router.register(r"api/categories", ServerCategoryViewSet, basename="categories")
+router.register(r"api/messages", MessageViewSet, basename="messages")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
