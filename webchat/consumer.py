@@ -56,7 +56,7 @@ class ChatConsumer(JsonWebsocketConsumer):
     def chat_message(self, event):
         # send only to sockets in this same room_group_name
         self.send_json({
-            "message": event["message"]
+            "message": event["new_message"]
         })
 
     def disconnect(self, close_code):
