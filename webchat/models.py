@@ -7,8 +7,8 @@ class ConversationModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Messages(models.Model):
-    conversation = models.ForeignKey(ConversationModel, on_delete=models.CASCADE, related_name="message")
+    conversation = models.ForeignKey(ConversationModel, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     content = models.TextField()
-    timestamp_create = models.DateTimeField(auto_now_add=True)
-    timestamp_update = models.DateTimeField(auto_now=True)
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_updated = models.DateTimeField(auto_now=True)
