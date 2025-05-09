@@ -1,8 +1,10 @@
-from rest_framework import serializer
+from rest_framework import serializers
+
 from .models import Messages
 
-class MessageSerializer(serializer.ModelSerializer):
-    sender = serializer.StringRelatedField()
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender = serializers.StringRelatedField()
 
 
     class Meta:
