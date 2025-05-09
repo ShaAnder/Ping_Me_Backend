@@ -11,7 +11,9 @@ class MessageViewSet(viewsets.ViewSet):
     @list_message_docs
     def list(self, request):
         channel_id = request.query_params.get("channel_id")
-        conversation = ConversationModel.objects.get(channel_id=channel_id)
+        conversation = ConversationModel.objects.filter(channel_id=channel_id).first()
+        if not conversation:
+            return Response([])
         message = conversation.messages.all()
 
         serializer = MessageSerializer(message, many=True)
