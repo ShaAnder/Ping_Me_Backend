@@ -13,7 +13,7 @@ class ChatConsumer(JsonWebsocketConsumer):
         self.server_id  = self.scope["url_route"]["kwargs"]["serverId"]
         self.channel_id = self.scope["url_route"]["kwargs"]["channelId"]
 
-        # build one unique room name
+        # build one unique room name, to prevent same id diff server
         self.room_group_name = f"chat_s{self.server_id}_c{self.channel_id}"
         
         # accept the WS, then join the correctly‑named group
