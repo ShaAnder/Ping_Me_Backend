@@ -3,9 +3,10 @@ from channels.generic.websocket import JsonWebsocketConsumer
 
 
 class ChatConsumer(JsonWebsocketConsumer):
-    # Optionally auto-join a group on connect (Channels 3 will do this for 
-    # any group names in `groups` if defined).
-    # groups = ["chat"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.channel_id = None
+        self.user = None
 
     def connect(self):
         self.accept()
