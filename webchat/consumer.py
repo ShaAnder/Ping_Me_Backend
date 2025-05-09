@@ -13,16 +13,13 @@ class ChatConsumer(JsonWebsocketConsumer):
         self.user = None
 
     def connect(self):
-        # pull both IDs out of the URL
-        self.server_id  = self.scope["url_route"]["kwargs"]["serverId"]
+        self.server_id = self.scope["url_route"]["kwargs"]["serverId"]
         self.channel_id = self.scope["url_route"]["kwargs"]["channelId"]
 
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.get(id=1)  # Replace with self.scope["user"] when using real auth
 
-        # build one unique room name, to prevent same id diff server
         self.room_group_name = f"chat_s{self.server_id}_c{self.channel_id}"
-        
-        # accept the WS, then join the correctly‑named group
+
         self.accept()
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -30,35 +27,40 @@ class ChatConsumer(JsonWebsocketConsumer):
         )
 
     def receive_json(self, content, **kwargs):
-        channel_id = self.channel_id
-        sender = self.user
-        message = content["message"]
+        message = content.get("message", "")
 
-        conversation = ConversationModel.objects.get_or_create(channel_id=channel_id)
+        conversation, _ = ConversationModel.objects.get_or_create(channel_id=self.channel_id)
 
-        new_message = Messages.objects.create(conversation=conversation, sender=sender, content=message)
+        new_message = Messages.objects.create(
+            conversation=conversation,
+            sender=self.user,
+            content=message
+        )
 
-        # only broadcast to the exact room group
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 "type": "chat.message",
-                "new_message": {
+                "message": {
                     "id": new_message.id,
                     "sender": new_message.sender.username,
                     "content": new_message.content,
-                    "timestamp": [new_message.timestamp_create.isoformat(), new_message.timestamp_update.isoformat()],
+                    "timestamp": [
+                        new_message.timestamp_create.isoformat(),
+                        new_message.timestamp_update.isoformat()
+                    ],
                 }
-                
             }
         )
 
     def chat_message(self, event):
-        # send only to sockets in this same room_group_name
         self.send_json({
             "message": event["message"]
         })
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(self.channel_id, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_group_name,
+            self.channel_name
+        )
         super().disconnect(close_code)
