@@ -47,7 +47,7 @@ class ChatConsumer(JsonWebsocketConsumer):
                     "id": new_message.id,
                     "sender": new_message.sender.username,
                     "content": new_message.content,
-                    "timestamp": [new_message.timestamp_create.isoformat(), new_message.timestamp_update.isoformat()],
+                    "timestamp": [new_message.timestamp_created.isoformat(), new_message.timestamp_updated.isoformat()],
                 }
                 
             }
