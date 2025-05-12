@@ -15,7 +15,7 @@ class AccountViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         user_id = request.query_params.get('username')
         if user_id:
-            account = get_object_or_404(Account, user__id=user_id)
+            account = get_object_or_404(Account, owner__id=user_id)
             serializer = AccountSerializer(account)
             return Response(serializer.data)
         return Response({"detail": "User ID is required."}, status=400)
