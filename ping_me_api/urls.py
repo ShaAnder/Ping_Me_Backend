@@ -19,6 +19,8 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import (TokenObtainPairView,
+                                            TokenRefreshView)
 
 from server.views import ServerCategoryViewSet, ServerListViewSet
 from webchat.views import MessageViewSet
@@ -38,6 +40,10 @@ urlpatterns = [
     path("api/docs/schema/", SpectacularAPIView.as_view(), name="schema"),
     # view the ui
     path("api/docs/schema/ui/", SpectacularSwaggerView.as_view()),
+    # jwt paths
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("", include("account.urls")),
 ] + router.urls
+
 
