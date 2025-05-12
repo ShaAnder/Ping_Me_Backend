@@ -80,7 +80,7 @@ class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     retrieve:
         Return a single category by ID.
     """
-
+    serializer_class = ServerCategorySerializer
     queryset = ServerCategory.objects.all().order_by("name")
 
     @extend_schema(responses=ServerCategorySerializer)
