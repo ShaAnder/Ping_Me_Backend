@@ -75,21 +75,16 @@ class ServerListViewSet(viewsets.ViewSet):
 class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     list:
-      Return all categories.
+        Return all categories.
 
     retrieve:
-      Return a single category by ID.
+        Return a single category by ID.
     """
 
     queryset = ServerCategory.objects.all().order_by("name")
 
     @extend_schema(responses=ServerCategorySerializer)
-    def list(self, request):
-        serializer = ServerCategorySerializer(self.queryset, many=True)
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
-    # # Optional: allow client to search/filter by name
-    # filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    # search_fields = ['name']          # /api/categories/?search=game
-    # ordering_fields = ['name']       # /api/categories/?ordering=-name
-    # ordering = ['name']
