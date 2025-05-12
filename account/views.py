@@ -5,12 +5,13 @@ from rest_framework.response import Response
 
 from .models import Account
 from .serializers import AccountSerializer
+from .schemas import account_list_docs
 
 
 class AccountViewSet(viewsets.ViewSet):
     queryset = Account.objects.all()
 
-    @extend_schema(responses=AccountSerializer)
+    @account_list_docs
     def list(self, request):
 
 

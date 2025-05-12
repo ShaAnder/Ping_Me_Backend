@@ -3,7 +3,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 
 from .serializers import AccountSerializer
 
-server_list_docs = extend_schema(
+account_list_docs = extend_schema(
     responses=AccountSerializer(many=True),
     parameters=[
         OpenApiParameter(
