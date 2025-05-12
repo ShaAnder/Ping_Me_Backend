@@ -13,7 +13,7 @@ class AccountViewSet(viewsets.ViewSet):
 
     @account_list_docs
     def list(self, request, *args, **kwargs):
-        user_id = request.query_params.get('user')
+        user_id = request.query_params.get('username')
         if user_id:
             account = get_object_or_404(Account, user__id=user_id)
             serializer = AccountSerializer(account)
