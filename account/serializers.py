@@ -27,7 +27,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "owner",
             "created_at",
             "updated_at",
-            "name",
+            "username",
             "location",
             "content",
             "image",

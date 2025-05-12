@@ -22,6 +22,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
+from account.views import AccountViewSet
 from server.views import ServerCategoryViewSet, ServerListViewSet
 from webchat.views import MessageViewSet
 
@@ -32,6 +33,7 @@ router.register("api/server_list/select", ServerListViewSet)
 router.register(r"api/servers", ServerListViewSet, basename="servers")
 router.register(r"api/categories", ServerCategoryViewSet, basename="categories")
 router.register(r"api/messages", MessageViewSet, basename="messages")
+router.register(r"api/account", AccountViewSet, basename="account") 
 # router.register(r"servers/(?P<server_pk>[^/.]+)/last-channel", LastChannelViewSet, basename="last-channel")
 
 urlpatterns = [
