@@ -8,9 +8,13 @@ from .serializers import AccountSerializer
 
 
 class AccountViewSet(viewsets.ViewSet):
-    queryset = Account
+    queryset = Account.objects.all()
 
     @extend_schema(responses=AccountSerializer)
     def list(self, request):
-        serializer = AccountSerializer(self.queryset)
+
+
+        user_id = request.query_params.get("user_id")
+        queryset = self.queryset.filter(id=user_id)
+        serializer = AccountSerializer(queryset)
         return Response(serializer.data)
