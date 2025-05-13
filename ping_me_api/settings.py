@@ -157,7 +157,6 @@ CHANNEL_LAYERS = {
 
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
 ASGI_APPLICATION = "ping_me_api.asgi.application"
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
