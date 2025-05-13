@@ -5,11 +5,13 @@ from rest_framework.response import Response
 
 from .models import Account
 from .schemas import account_list_docs
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer#
+from rest_framework.permissions import IsAuthenticated
 
 
 class AccountViewSet(viewsets.ViewSet):
     queryset = Account.objects.all()
+    permission_classes = [IsAuthenticated]
 
     @account_list_docs
     def list(self, request, *args, **kwargs):

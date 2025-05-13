@@ -31,7 +31,8 @@ class Account(models.Model):
 
 def create_account(sender, instance, created, **kwargs):
     if created:
-        Account.objects.create(owner=instance)
+        Account.objects.create(owner=instance, username=instance.username)
+        
 
 
 post_save.connect(create_account, sender=User)
