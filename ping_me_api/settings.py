@@ -36,11 +36,8 @@ DEBUG = os.environ.get("DEBUG")
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "ping-me-api.tomeofmanythings.com",
-    "ping-me-dev.tomeofmanythings.com",
-    "ping-me.tomeofmanythings.com",
-    "ping-me-pp5-backend-6aaeef173b97.herokuapp.com",
-    "ping-me-pp5-frontend-c34a5313765d.herokuapp.com",
+    ".herokuapp.com",
+    os.environ.get("ALLOWED_HOSTS"),
 ]
 
 # Application definition
@@ -80,18 +77,10 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://ping-me-api.tomeofmanythings.com",
-    "https://ping-me-dev.tomeofmanythings.com",
-    "https://ping-me.tomeofmanythings.com",
-
     'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com'
-    "https://ping-me-pp5-frontend-c34a5313765d.herokuapp.com",
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://ping-me-api.tomeofmanythings.com",
-    "https://ping-me-dev.tomeofmanythings.com",
-    "https://ping-me.tomeofmanythings.com",
     origin.replace('\\x3a', ':')
     for origin in [os.environ.get("CLIENT_ORIGIN"), os.environ.get("CLIENT_ORIGIN_DEV")]
     if origin
