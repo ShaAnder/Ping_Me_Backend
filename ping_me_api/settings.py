@@ -85,6 +85,9 @@ CORS_ALLOWED_ORIGINS = [
     if origin
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = ["Set-Cookie"]
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 
@@ -95,7 +98,6 @@ if client_origin_dev:
     parsed = urlparse(client_origin_dev)
     ALLOWED_HOSTS.append(parsed.hostname)
 
-CORS_ALLOW_CREDENTIALS = True
 
 CLOUDINARY_STORAGE = {
     "cloud_name": os.environ.get("CLOUDINARY_CLOUD_NAME"),
@@ -248,7 +250,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
     #JWTCOOKIES
     "ACCESS_TOKEN_NAME": "access_token",
