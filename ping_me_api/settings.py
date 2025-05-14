@@ -241,5 +241,5 @@ SIMPLE_JWT = {
     #JWTCOOKIES
     "ACCESS_TOKEN_NAME": "access_token",
     "REFRESH_TOKEN_NAME": "refresh_token",
-    "JWT_COOKIE_SAMESITE": "Lax",
+    "JWT_COOKIE_SAMESITE": "None",
 }
