@@ -28,13 +28,28 @@ class AccountViewSet(viewsets.ViewSet):
 
 class SetCookieMixin:
     def finalize_response(self, request, response, *args, **kwargs):
-        if response.data.get("refresh"):
-            response.set_cookie(SIMPLE_JWT["REFRESH_TOKEN_NAME"], response.data["refresh"], max_age=SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"], httponly=True, samesite=SIMPLE_JWT["JWT_COOKIE_SAMESITE"])
-        
-        if response.data.get("access"):
-            response.set_cookie(SIMPLE_JWT["ACCESS_TOKEN_NAME"], response.data["access"], max_age=SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"], httponly=True, samesite=SIMPLE_JWT["JWT_COOKIE_SAMESITE"])
+        # If the view returned a refresh token, set it in a cookie:
+        if "refresh" in response.data:
+            response.set_cookie(
+                SIMPLE_JWT["REFRESH_TOKEN_NAME"],
+                response.data["refresh"],
+                max_age=SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"],
+                httponly=True,
+                samesite=SIMPLE_JWT["JWT_COOKIE_SAMESITE"],
+            )
+        # If the view returned an access token, set it in a cookie:
+        if "access" in response.data:
+            response.set_cookie(
+                SIMPLE_JWT["ACCESS_TOKEN_NAME"],
+                response.data["access"],
+                max_age=SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
+                httponly=True,
+                samesite=SIMPLE_JWT["JWT_COOKIE_SAMESITE"],
+            )
 
-        del response.data["access"]
+        # Remove both tokens from the JSON body if present
+        response.data.pop("access", None)
+        response.data.pop("refresh", None)
 
         return super().finalize_response(request, response, *args, **kwargs)
     
