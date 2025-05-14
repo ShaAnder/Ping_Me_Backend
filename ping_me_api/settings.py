@@ -36,11 +36,11 @@ DEBUG = os.environ.get("DEBUG")
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    ".herokuapp.com",
-    'ping-me-api.tomeofmanythings.com',
-    'ping-me-dev.tomeofmanythings.com',
-    'ping-me.tomeofmanythings.com',
-    os.environ.get("ALLOWED_HOSTS"),
+    "ping-me-api.tomeofmanythings.com",
+    "ping-me-dev.tomeofmanythings.com",
+    "ping-me.tomeofmanythings.com",
+    "ping-me-pp5-backend-6aaeef173b97.herokuapp.com",
+    "ping-me-pp5-frontend-c34a5313765d.herokuapp.com",
 ]
 
 # Application definition
@@ -80,9 +80,11 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'ping-me-api.tomeofmanythings.com',
-    'ping-me-dev.tomeofmanythings.com',
-    'ping-me.tomeofmanythings.com',
+    "https://ping-me-api.tomeofmanythings.com",
+    "https://ping-me-dev.tomeofmanythings.com",
+    "https://ping-me.tomeofmanythings.com",
+    'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com'
+    "https://ping-me-pp5-frontend-c34a5313765d.herokuapp.com",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -247,4 +249,4 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_NAME": "access_token",
     "REFRESH_TOKEN_NAME": "refresh_token",
     "JWT_COOKIE_SAMESITE": "None",
-}
+}   
