@@ -33,7 +33,7 @@ router.register("api/server_list/select", ServerListViewSet)
 router.register(r"api/servers", ServerListViewSet, basename="servers")
 router.register(r"api/categories", ServerCategoryViewSet, basename="categories")
 router.register(r"api/messages", MessageViewSet, basename="messages")
-router.register(r"api/account", AccountViewSet, basename="account") 
+router.register(r"api/account", AccountViewSet, basename="account")
 # router.register(r"servers/(?P<server_pk>[^/.]+)/last-channel", LastChannelViewSet, basename="last-channel")
 
 urlpatterns = [
@@ -45,7 +45,6 @@ urlpatterns = [
     # jwt paths
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/accounts/', include("rest_registration.api.urls")),
 ] + router.urls
 
 
