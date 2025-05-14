@@ -76,9 +76,7 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com',
-    "https://ping-me-pp5-frontend-c34a5313765d.herokuapp.com",
-    "https://pleasantly-quick-seasnail.ngrok-free.app",
+    'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com'
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -86,9 +84,6 @@ CORS_ALLOWED_ORIGINS = [
     for origin in [os.environ.get("CLIENT_ORIGIN"), os.environ.get("CLIENT_ORIGIN_DEV")]
     if origin
 ]
-
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
@@ -100,6 +95,7 @@ if client_origin_dev:
     parsed = urlparse(client_origin_dev)
     ALLOWED_HOSTS.append(parsed.hostname)
 
+CORS_ALLOW_CREDENTIALS = True
 
 CLOUDINARY_STORAGE = {
     "cloud_name": os.environ.get("CLOUDINARY_CLOUD_NAME"),
@@ -236,9 +232,8 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     # authenticate our users
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        # "rest_framework.authentication.SessionAuthentication",
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         "account.authentication.JWTCookieAuthentication",
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
 }
@@ -252,9 +247,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    # JWTCookie
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
+    #JWTCOOKIES
     "ACCESS_TOKEN_NAME": "access_token",
     "REFRESH_TOKEN_NAME": "refresh_token",
     "JWT_COOKIE_SAMESITE": "Lax",
