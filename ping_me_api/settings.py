@@ -129,11 +129,11 @@ TEMPLATES = [
 redis_url = os.environ.get("REDIS_URL")
 
 # Append the param if not already present
-if redis_url and "ssl_cert_reqs" not in redis_url:
+if redis_url:
     if "?" in redis_url:
-        redis_url += "&ssl_cert_reqs=none"
+        redis_url += "&ssl_cert_reqs=none&ssl_check_hostname=false"
     else:
-        redis_url += "?ssl_cert_reqs=none"
+        redis_url += "?ssl_cert_reqs=none&ssl_check_hostname=false"
 
 CHANNEL_LAYERS = {
     "default": {
