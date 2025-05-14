@@ -223,6 +223,9 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',  
+    ),
 }
 
 SPECTACULAR_SETTINGS = {
@@ -234,10 +237,26 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
-    #JWTCOOKIES
-    "ACCESS_TOKEN_NAME": "access_token",
-    "REFRESH_TOKEN_NAME": "refresh_token",
-    "JWT_COOKIE_SAMESITE": "None",
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }   
+
+REST_REGISTRATION = {
+    "REGISTER_VERIFICATION_ENABLED": True,
+    "REGISTER_EMAIL_VERIFICATION_ENABLED": True,
+    "REGISTER_EMAIL_VERIFICATION_URL": "https://your-frontend-domain/verify-email/",
+    # And other settings as needed
+}
+
+# DJANGO EMAIL SETUP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("HOST_EMAIL")
+EMAIL_HOST_PASSWORD = os.environ.get("HOST_PW")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

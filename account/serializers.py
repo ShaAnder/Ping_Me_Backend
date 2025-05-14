@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -35,3 +37,32 @@ class AccountSerializer(serializers.ModelSerializer):
             "image",
             "image_url",
         ]
+
+class AccountRegistrationSerializer(serializers.ModelSerializer):
+    email2 = serializers.EmailField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'email2', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate(self, data):
+        if data['email'] != data['email2']:
+            raise serializers.ValidationError("Emails must match.")
+        if User.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError("Email already registered.")
+        return data
+    
+    def validate_password(self, value):
+        validate_password(value)
+        return value
+
+    def create(self, validated_data):
+        validated_data.pop('email2')
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            is_active=False  # Inactive until email is verified
+        )
+        return user
