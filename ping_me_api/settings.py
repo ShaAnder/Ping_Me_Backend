@@ -76,7 +76,9 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com'
+    'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com',
+    "https://ping-me-pp5-frontend-c34a5313765d.herokuapp.com",
+    "https://pleasantly-quick-seasnail.ngrok-free.app",
 ]
 
 CORS_ALLOWED_ORIGINS = [
