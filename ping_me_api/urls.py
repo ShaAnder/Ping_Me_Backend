@@ -26,8 +26,6 @@ from account.views import AccountViewSet
 from server.views import ServerCategoryViewSet, ServerListViewSet
 from webchat.views import MessageViewSet
 
-from .views import CookieTokenObtainPairView
-
 router = DefaultRouter()
 router.register("api/server_list/select", ServerListViewSet)
 
@@ -45,7 +43,7 @@ urlpatterns = [
     # view the ui
     path("api/docs/schema/ui/", SpectacularSwaggerView.as_view()),
     # jwt paths
-    path('api/token/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("", include("account.urls")),
 ] + router.urls
