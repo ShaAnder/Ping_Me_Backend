@@ -22,9 +22,11 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
-from account.views import AccountViewSet, CookieTokenObtainPairView
+from account.views import AccountViewSet
 from server.views import ServerCategoryViewSet, ServerListViewSet
 from webchat.views import MessageViewSet
+
+from .views import CookieTokenObtainPairView
 
 router = DefaultRouter()
 router.register("api/server_list/select", ServerListViewSet)
