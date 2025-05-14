@@ -147,8 +147,7 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             "hosts": [
                 {
-                    "address": f"{redis_password}@{redis_host}",
-                    "password": redis_password,
+                    "address": f"rediss://:{redis_password}@{redis_host}:{redis_port}/0",  # 'rediss://' for SSL
                     "ssl": ssl_context,
                 }
             ],
