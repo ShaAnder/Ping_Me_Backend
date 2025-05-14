@@ -85,8 +85,8 @@ CORS_ALLOWED_ORIGINS = [
     if origin
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_EXPOSE_HEADERS = ["Set-Cookie"]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
@@ -250,9 +250,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
-    #JWTCOOKIES
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    # JWTCookie
     "ACCESS_TOKEN_NAME": "access_token",
     "REFRESH_TOKEN_NAME": "refresh_token",
     "JWT_COOKIE_SAMESITE": "Lax",
