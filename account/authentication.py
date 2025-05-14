@@ -5,7 +5,7 @@ from ping_me_api.settings import SIMPLE_JWT
 
 class JWTCookieAuthentication(JWTAuthentication):
     def authenticate(self, request):
-        raw_token= request.COOKIE.get(SIMPLE_JWT["ACCESS_TOKEN_NAME"]) or None
+        raw_token= request.COOKIES.get(SIMPLE_JWT["ACCESS_TOKEN_NAME"]) or None
 
         if raw_token is None:
             return None
