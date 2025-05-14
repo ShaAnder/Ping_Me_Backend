@@ -37,6 +37,9 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     ".herokuapp.com",
+    'ping-me-api.tomeofmanythings.com',
+    'ping-me-dev.tomeofmanythings.com',
+    'ping-me.tomeofmanythings.com',
     os.environ.get("ALLOWED_HOSTS"),
 ]
 
@@ -77,7 +80,9 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com'
+    'ping-me-api.tomeofmanythings.com',
+    'ping-me-dev.tomeofmanythings.com',
+    'ping-me.tomeofmanythings.com',
 ]
 
 CORS_ALLOWED_ORIGINS = [
