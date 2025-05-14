@@ -35,8 +35,11 @@ class SetCookieMixin:
             response.set_cookie(SIMPLE_JWT["ACCESS_TOKEN_NAME"], response.data["access"], max_age=SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"], httponly=True, samesite=SIMPLE_JWT["JWT_COOKIE_SAMESITE"])
 
         del response.data["access"]
-        
+
         return super().finalize_response(request, response, *args, **kwargs)
     
 class CookieTokenObtainPairView(SetCookieMixin, TokenObtainPairView):
+    pass
+
+class CookieTokenRefreshView(SetCookieMixin, TokenRefreshView):
     pass
