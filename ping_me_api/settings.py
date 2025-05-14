@@ -234,8 +234,9 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     # authenticate our users
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        # "rest_framework.authentication.SessionAuthentication",
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # Allow header-based auth for interceptor-retry
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # Keep cookie-based auth for direct cookie reads
         "account.authentication.JWTCookieAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
