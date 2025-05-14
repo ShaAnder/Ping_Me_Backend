@@ -22,8 +22,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
-from account.views import (AccountViewSet, CookieTokenObtainPairView,
-                           CookieTokenRefreshView)
+from account.views import AccountViewSet, CookieTokenObtainPairView
 from server.views import ServerCategoryViewSet, ServerListViewSet
 from webchat.views import MessageViewSet
 
@@ -45,7 +44,7 @@ urlpatterns = [
     path("api/docs/schema/ui/", SpectacularSwaggerView.as_view()),
     # jwt paths
     path('api/token/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path("api/token/refresh/", CookieTokenRefreshView.as_view(), name="token_refresh"),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("", include("account.urls")),
 ] + router.urls
 
