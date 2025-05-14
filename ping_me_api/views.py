@@ -1,12 +1,12 @@
-from rest_framework_simplejwt.views import TokenObtainPairView
 from django.conf import settings
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Example SIMPLE_JWT config for reference
 SIMPLE_JWT = getattr(settings, "SIMPLE_JWT", {})
 ACCESS_TOKEN_NAME = SIMPLE_JWT.get("ACCESS_TOKEN_NAME", "access_token")
 REFRESH_TOKEN_NAME = SIMPLE_JWT.get("REFRESH_TOKEN_NAME", "refresh_token")
-ACCESS_TOKEN_LIFETIME = int(SIMPLE_JWT.get("ACCESS_TOKEN_LIFETIME", 300))  # seconds
-REFRESH_TOKEN_LIFETIME = int(SIMPLE_JWT.get("REFRESH_TOKEN_LIFETIME", 604800))  # seconds
+ACCESS_TOKEN_LIFETIME = (SIMPLE_JWT.get("ACCESS_TOKEN_LIFETIME", 300))  # seconds
+REFRESH_TOKEN_LIFETIME = (SIMPLE_JWT.get("REFRESH_TOKEN_LIFETIME", 604800))  # seconds
 JWT_COOKIE_SAMESITE = SIMPLE_JWT.get("JWT_COOKIE_SAMESITE", "Lax")
 JWT_COOKIE_SECURE = SIMPLE_JWT.get("JWT_COOKIE_SECURE", True)
 JWT_COOKIE_DOMAIN = SIMPLE_JWT.get("JWT_COOKIE_DOMAIN", ".herokuapp.com")  # or your domain
