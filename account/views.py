@@ -25,3 +25,4 @@ class AccountViewSet(viewsets.ViewSet):
             serializer = AccountSerializer(account)
             return Response(serializer.data)
         return Response({"detail": "User ID is required."}, status=400)
+
