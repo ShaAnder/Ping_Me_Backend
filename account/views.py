@@ -44,9 +44,10 @@ class JWTSetCookieMixin:
                 httponly=True,
                 samesite=settings.SIMPLE_JWT["JWT_COOKIE_SAMESITE"],
             )
-
-        response.data.pop("access", None)
-
+        
+        # Remove this line:
+        # del response.data["access"]
+        
         return super().finalize_response(request, response, *args, **kwargs)
 
 
@@ -54,9 +55,4 @@ class CookieTokenObtainPairView(JWTSetCookieMixin, TokenObtainPairView):
     pass
 
 class CookieTokenRefreshView(JWTSetCookieMixin, TokenRefreshView):
-    def post(self, request, *args, **kwargs):
-        # Extract refresh token from cookie
-        refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['REFRESH_TOKEN_NAME'])
-        if refresh_token:
-            request.data['refresh'] = refresh_token
-        return super().post(request, *args, **kwargs)
+    pass
