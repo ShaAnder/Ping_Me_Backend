@@ -47,9 +47,6 @@ class SetCookieMixin:
                 samesite=SIMPLE_JWT["JWT_COOKIE_SAMESITE"],
             )
 
-        # Remove both tokens from the JSON body if present
-        response.data.pop("access", None)
-        response.data.pop("refresh", None)
 
         return super().finalize_response(request, response, *args, **kwargs)
     
