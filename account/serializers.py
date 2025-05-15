@@ -89,3 +89,18 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
     
 class ResendVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password1 = serializers.CharField(write_only=True)
+    new_password2 = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        if data['new_password1'] != data['new_password2']:
+            raise serializers.ValidationError("Passwords do not match.")
+        validate_password(data['new_password1'])
+        return data

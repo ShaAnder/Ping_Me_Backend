@@ -1,9 +1,12 @@
 import os
 
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from dotenv import load_dotenv
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -14,12 +17,13 @@ from ping_me_api import settings
 from ping_me_api.utils import generate_token, verify_token
 
 from .serializers import (AccountRegistrationSerializer, AccountSerializer,
+                          PasswordResetConfirmSerializer,
+                          PasswordResetRequestSerializer,
                           ResendVerificationSerializer)
 
 load_dotenv()
 
 class AccountViewSet(viewsets.ViewSet):
-    queryset = User.objects.all()
 
     # Registration endpoint: /api/account/register/
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
@@ -72,6 +76,7 @@ class AccountViewSet(viewsets.ViewSet):
             return HttpResponseRedirect(redirect_url)
         return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
     
+    #Resend the email
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def resend_verification(self, request):
         serializer = ResendVerificationSerializer(data=request.data)
@@ -97,6 +102,62 @@ class AccountViewSet(viewsets.ViewSet):
         except User.DoesNotExist:
             # For security, do not reveal if the email is not registered
             return Response({'message': 'If this email is registered and not yet verified, a verification email has been sent.'}, status=status.HTTP_200_OK)
+
+    # Forgot password endpoint: /api/account/password_reset/
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def password_reset(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        try:
+            user = User.objects.get(email=email)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            reset_url = f"{os.environ.get('CLIENT_ORIGIN_DEV', 'http://localhost:3000')}/reset-password/{uid}/{token}"
+            logo_url = "http://localhost:8000/static/admin/img/pingMe.png"
+            html_message = render_to_string(
+                'emails/reset_password.html',
+                {
+                    'user': user,
+                    'reset_url': reset_url,
+                    'logo_url': logo_url,
+                }
+            )
+            plain_message = f"Hi {user.username}, click to reset your password: {reset_url}"
+            send_mail(
+                "Reset your PingMe password",
+                plain_message,
+                'pingmepp5@gmail.com',
+                [user.email],
+                fail_silently=False,
+                html_message=html_message,
+            )
+        except User.DoesNotExist:
+            pass
+        return Response({'message': 'If this email is registered, a password reset link has been sent.'})
+
+    # Reset confirmation endpoint: /api/account/password_reset_confirm/
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def password_reset_confirm(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        uid = serializer.validated_data['uid']
+        token = serializer.validated_data['token']
+        new_password = serializer.validated_data['new_password1']
+        try:
+            uid_int = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=uid_int)
+            if default_token_generator.check_token(user, token):
+                user.set_password(new_password)
+                user.save()
+                return Response({'message': 'Password has been reset successfully.'})
+            else:
+                return Response({'error': 'Invalid or expired token.'}, status=400)
+        except Exception:
+            return Response({'error': 'Invalid request.'}, status=400)
+
+#--------------------------#
+###### user endpoints ######
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def me(self, request):
