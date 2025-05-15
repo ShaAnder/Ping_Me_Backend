@@ -150,7 +150,12 @@ class AccountViewSet(viewsets.ViewSet):
             if default_token_generator.check_token(user, token):
                 user.set_password(new_password)
                 user.save()
-                return Response({'message': 'Password has been reset successfully.'})
+                # Use environment variable to determine redirect URL
+                if os.environ.get("DEV"):
+                    redirect_url = os.environ.get("CLIENT_ORIGIN_DEV")
+                else:
+                    redirect_url = os.environ.get("CLIENT_ORIGIN")
+                return HttpResponseRedirect(redirect_url)
             else:
                 return Response({'error': 'Invalid or expired token.'}, status=400)
         except Exception:
