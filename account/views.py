@@ -13,7 +13,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from ping_me_api import settings
 from ping_me_api.utils import generate_token, verify_token
 
 from .serializers import (AccountRegistrationSerializer, AccountSerializer,
@@ -155,12 +154,14 @@ class AccountViewSet(viewsets.ViewSet):
             if default_token_generator.check_token(user, token):
                 user.set_password(new_password)
                 user.save()
-                # Use environment variable to determine redirect URL
                 if os.environ.get("DEV"):
                     redirect_url = os.environ.get("CLIENT_ORIGIN_DEV")
                 else:
                     redirect_url = os.environ.get("CLIENT_ORIGIN")
-                return HttpResponseRedirect(redirect_url)
+                return Response({
+                    'message': 'Password has been reset successfully.',
+                    'redirect_url': redirect_url + '/login'
+                })
             else:
                 return Response({'error': 'Invalid or expired token.'}, status=400)
         except Exception:
