@@ -2,9 +2,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from ping_me_api.utils import validate_image_file  # Adjust path if needed
+from server.serializers import ServerSerializer
 
 from .models import Account
 
@@ -23,6 +26,23 @@ class AccountSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_image_url(self, obj):
         return obj.image.url if obj.image else None
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        user = request.user
+        # This gets the Account instance for the logged-in user
+        account = user.account  
+        # Thanks to related_name="servers" on Server.members
+        servers = account.servers.all()  
+
+        return Response({
+            "id": account.id,
+            "username": account.username,
+            "email": user.email,
+            "avatar": account.image.url if account.image else None,
+            # Add other Account fields as needed
+            "servers": ServerSerializer(servers, many=True).data,
+        })
 
     class Meta:
         model = Account

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from ping_me_api.utils import generate_token, verify_token
@@ -46,12 +46,6 @@ class AccountViewSet(viewsets.ViewSet):
             user.save()
             return Response({'message': 'Email verified. You can now log in.'})
         return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Optionally, add profile retrieval (requires auth)
-    def retrieve(self, request, pk=None):
-        user = self.get_object()
-        serializer = AccountSerializer(user)
-        return Response(serializer.data)
     
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def resend_verification(self, request):
@@ -78,3 +72,17 @@ class AccountViewSet(viewsets.ViewSet):
         except User.DoesNotExist:
             # For security, do not reveal if the email is not registered
             return Response({'message': 'If this email is registered and not yet verified, a verification email has been sent.'}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        account = request.user.account
+        serializer = AccountSerializer(account)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['patch'], permission_classes=[IsAuthenticated])
+    def edit_me(self, request):
+        account = request.user.account
+        serializer = AccountSerializer(account, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)

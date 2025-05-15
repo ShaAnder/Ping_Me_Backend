@@ -34,7 +34,7 @@ class Server(models.Model):
         ServerCategory, on_delete=models.PROTECT, related_name="server_category"
     )
     description = models.CharField(max_length=255, blank=True, null=True)
-    members = models.ManyToManyField(Account)
+    members = models.ManyToManyField(Account, related_name="servers")
     server_icon = CloudinaryField(
         "server icon", folder="ServerIcons", default="default_server_uxlg3a.jpg"
     )
