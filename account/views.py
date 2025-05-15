@@ -23,10 +23,8 @@ class AccountViewSet(viewsets.ViewSet):
             # Generate uidb64 and token
             uidb64, token = generate_token(user)
             # Build verification URL
-            verify_url = (
-                f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com"
-                f"/api/account/verify_email/?uid={uidb64}&token={token}"
-            )
+            verify_url = f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/account/verify_email/?uid={uidb64}&token={token}"
+            
             send_mail(
                 'Verify your email',
                 f"Hi {user.username}, click to verify: {verify_url}",
@@ -65,7 +63,9 @@ class AccountViewSet(viewsets.ViewSet):
             if user.is_active:
                 return Response({'message': 'Account already verified.'}, status=status.HTTP_200_OK)
             uidb64, token = generate_token(user)
-            verify_url = f"https://your-backend-domain/api/account/verify_email/?uid={uidb64}&token={token}"
+            verify_url = (
+                f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/account/verify_email/?uid={uidb64}&token={token}"
+            )
             # Send the email
             send_mail(
                 'Verify your email',
