@@ -1,6 +1,9 @@
+import os
+
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
+from dotenv import load_dotenv
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,6 +15,7 @@ from ping_me_api.utils import generate_token, verify_token
 from .serializers import (AccountRegistrationSerializer, AccountSerializer,
                           ResendVerificationSerializer)
 
+load_dotenv()
 
 class AccountViewSet(viewsets.ViewSet):
     queryset = User.objects.all()
@@ -47,10 +51,10 @@ class AccountViewSet(viewsets.ViewSet):
             user.is_active = True
             user.save()
             # Use environment variable to determine redirect URL
-            if settings.DEBUG:
-                redirect_url = "https://pleasantly-quick-seasnail.ngrok-free.app/login"
+            if os.environ.get("DEV"):
+                redirect_url = os.environ.get("CLIENT_ORIGIN_DEV")
             else:
-                redirect_url = "https://ping-me-pp5-frontend-c34a5313765d.herokuapp.com/login"
+                redirect_url = os.environ.get("CLIENT_ORIGIN")
             return HttpResponseRedirect(redirect_url)
         return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
     
