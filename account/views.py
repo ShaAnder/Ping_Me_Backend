@@ -32,13 +32,14 @@ class AccountViewSet(viewsets.ViewSet):
             # Build verification URL
             # Build verification URL (as before)
             verify_url = f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/account/verify_email/?uid={uidb64}&token={token}"
-
+            logo_url = "http://localhost:8000/static/admin/img/pingMe.png"
             # Render HTML email template
             html_message = render_to_string(
                 'emails/verify_email.html',
                 {
                     'user': user,
                     'verification_url': verify_url,
+                    'logo_url': logo_url,
                 }
             )
             plain_message = f"Hi {user.username}, click to verify: {verify_url}"
