@@ -113,7 +113,7 @@ class AccountViewSet(viewsets.ViewSet):
             user = User.objects.get(email=email)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            reset_url = f"{os.environ.get('CLIENT_ORIGIN_DEV', 'http://localhost:3000')}/reset-password/{uid}/{token}"
+            reset_url = f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/account/reset-password/{uid}/{token}"
             logo_url = "http://localhost:8000/static/admin/img/pingMe.png"
             html_message = render_to_string(
                 'emails/reset_password.html',
