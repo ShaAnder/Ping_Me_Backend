@@ -3,6 +3,7 @@ import os
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
+from django.template.loader import render_to_string
 from dotenv import load_dotenv
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -29,14 +30,26 @@ class AccountViewSet(viewsets.ViewSet):
             # Generate uidb64 and token
             uidb64, token = generate_token(user)
             # Build verification URL
+            # Build verification URL (as before)
             verify_url = f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/account/verify_email/?uid={uidb64}&token={token}"
-            
+
+            # Render HTML email template
+            html_message = render_to_string(
+                'emails/verify_email.html',
+                {
+                    'user': user,
+                    'verification_url': verify_url,
+                }
+            )
+            plain_message = f"Hi {user.username}, click to verify: {verify_url}"
+
             send_mail(
                 'Verify your email',
-                f"Hi {user.username}, click to verify: {verify_url}",
+                plain_message,  # Fallback for clients that don't support HTML
                 'pingmepp5@gmail.com',
                 [user.email],
                 fail_silently=False,
+                html_message=html_message,
             )
             return Response({'message': 'Registration successful. Check your email.'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
