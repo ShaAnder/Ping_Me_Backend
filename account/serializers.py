@@ -66,3 +66,6 @@ class AccountRegistrationSerializer(serializers.ModelSerializer):
             is_active=False  # Inactive until email is verified
         )
         return user
+    
+class ResendVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()

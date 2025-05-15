@@ -1,33 +1,14 @@
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
 
-from ping_me_api.settings import SIMPLE_JWT
 from ping_me_api.utils import generate_token, verify_token
 
-from .models import Account
-from .schemas import account_list_docs
-from .serializers import AccountRegistrationSerializer, AccountSerializer
-
-
-class AccountViewSet(viewsets.ViewSet):
-    queryset = Account.objects.all()
-    permission_classes = [IsAuthenticated]
-
-    @account_list_docs
-    def list(self, request, *args, **kwargs):
-        user_id = request.query_params.get('user')
-        if user_id:
-            account = get_object_or_404(Account, owner__id=user_id)
-            serializer = AccountSerializer(account)
-            return Response(serializer.data)
-        return Response({"detail": "User ID is required."}, status=400)
+from .serializers import (AccountRegistrationSerializer, AccountSerializer,
+                          ResendVerificationSerializer)
 
 
 class AccountViewSet(viewsets.ViewSet):
@@ -39,8 +20,13 @@ class AccountViewSet(viewsets.ViewSet):
         serializer = AccountRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token = generate_token(user)
-            verify_url = f"{request.scheme}://{request.get_host()}/verify-email/?token={token}"
+            # Generate uidb64 and token
+            uidb64, token = generate_token(user)
+            # Build verification URL
+            verify_url = (
+                f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com"
+                f"/api/account/verify_email/?uid={uidb64}&token={token}"
+            )
             send_mail(
                 'Verify your email',
                 f"Hi {user.username}, click to verify: {verify_url}",
@@ -54,16 +40,13 @@ class AccountViewSet(viewsets.ViewSet):
     # Email verification endpoint: /api/account/verify_email/
     @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def verify_email(self, request):
+        uidb64 = request.GET.get('uid')
         token = request.GET.get('token')
-        user_pk = verify_token(token)
-        if user_pk:
-            try:
-                user = User.objects.get(pk=user_pk)
-                user.is_active = True
-                user.save()
-                return Response({'message': 'Email verified. You can now log in.'})
-            except User.DoesNotExist:
-                pass
+        user = verify_token(uidb64, token)
+        if user:
+            user.is_active = True
+            user.save()
+            return Response({'message': 'Email verified. You can now log in.'})
         return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # Optionally, add profile retrieval (requires auth)
@@ -71,3 +54,27 @@ class AccountViewSet(viewsets.ViewSet):
         user = self.get_object()
         serializer = AccountSerializer(user)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def resend_verification(self, request):
+        serializer = ResendVerificationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        try:
+            user = User.objects.get(email=email)
+            if user.is_active:
+                return Response({'message': 'Account already verified.'}, status=status.HTTP_200_OK)
+            uidb64, token = generate_token(user)
+            verify_url = f"https://your-backend-domain/api/account/verify_email/?uid={uidb64}&token={token}"
+            # Send the email
+            send_mail(
+                'Verify your email',
+                f"Hi {user.username}, click to verify: {verify_url}",
+                'pingmepp5@gmail.com',
+                [user.email],
+                fail_silently=False,
+            )
+            return Response({'message': 'Verification email resent.'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            # For security, do not reveal if the email is not registered
+            return Response({'message': 'If this email is registered and not yet verified, a verification email has been sent.'}, status=status.HTTP_200_OK)
