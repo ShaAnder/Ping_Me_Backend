@@ -5,7 +5,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from PIL import Image
 from rest_framework.exceptions import ValidationError
 
-ALLOWED_IMAGE_FORMATS = ["jpeg", "jpg", "png", "webp"]
+ALLOWED_IMAGE_FORMATS = ["jpeg", "jpg", "png", "webp", "gif"]
 MAX_FILE_SIZE_MB = 4
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 
