@@ -1,5 +1,7 @@
 from django.db.models import Count
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Channel, Server, ServerCategory
 from .serializers import (ChannelSerializer, ServerCategorySerializer,
@@ -7,19 +9,13 @@ from .serializers import (ChannelSerializer, ServerCategorySerializer,
 
 
 class ServerViewSet(viewsets.ModelViewSet):
-    """
-    Provides list, create, retrieve, update, partial_update, and destroy for servers.
-    """
     queryset = Server.objects.all()
     serializer_class = ServerSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        """
-        Set the owner to the current user and auto-create default channels.
-        """
         server = serializer.save(owner=self.request.user)
-        # Create default channels
+        server.members.add(self.request.user.account)  # Add creator as member
         Channel.objects.create(
             name="general",
             type=Channel.text,
@@ -36,12 +32,8 @@ class ServerViewSet(viewsets.ModelViewSet):
         return server
 
     def get_queryset(self):
-        """
-        Optionally filter by category, user, etc., based on query params.
-        """
         queryset = Server.objects.all()
         request = self.request
-
         category = request.query_params.get("category")
         qty = request.query_params.get("qty")
         by_user = request.query_params.get("by_user") == "true"
@@ -73,11 +65,25 @@ class ServerViewSet(viewsets.ModelViewSet):
                 pass
         return queryset
 
-    # Optionally, override get_serializer_context to pass extra context
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["num_members"] = self.request.query_params.get("with_num_members") == "true"
         return context
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def add_member(self, request, pk=None):
+        server = self.get_object()
+        account = request.user.account
+        server.members.add(account)
+        return Response({'status': 'member added'})
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def remove_member(self, request, pk=None):
+        server = self.get_object()
+        account = request.user.account
+        server.members.remove(account)
+        return Response({'status': 'member removed'})
+
 
 class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
