@@ -1,6 +1,7 @@
 from django.db import transaction
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+from rest_framework.permissions import AllowAny
 
 from .models import Channel, Server, ServerCategory
 
@@ -85,3 +86,4 @@ class ServerCategorySerializer(serializers.ModelSerializer):
 
     category_icon_url = serializers.SerializerMethodField()
     category_icon = serializers.ImageField(write_only=True, required=False)
+    permission_classes = [AllowAny]
