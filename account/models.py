@@ -19,7 +19,7 @@ class Account(models.Model):
     location = models.CharField(max_length=100, blank=True, null=True)
     content = models.TextField(blank=True)
     image = CloudinaryField(
-        "image", folder="Avatars", default="default_profile_uxlg3a.jpg"
+        "image", folder="Avatars", default="default_profile_uxlg3a.jpg", blank=True, null=True
     )
 
     class Meta:

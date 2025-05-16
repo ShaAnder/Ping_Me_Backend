@@ -17,7 +17,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     owner = serializers.ReadOnlyField(source="owner.username")
 
-    image = serializers.ImageField(write_only=True, required=False)
+    image = serializers.ImageField(write_only=True, required=False, allow_null=True)
     image_url = serializers.SerializerMethodField()
 
     def validate_image(self, value):
