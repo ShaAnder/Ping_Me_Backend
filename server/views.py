@@ -1,28 +1,47 @@
 from django.db.models import Count
-from django.shortcuts import render
-from drf_spectacular.utils import extend_schema
-from rest_framework import filters, viewsets
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from rest_framework import permissions, viewsets
 
-from .models import Server, ServerCategory
-from .schema import server_list_docs
-from .serializers import ServerCategorySerializer, ServerSerializer
-
-# we're opting for building a viewset instead of building each endpoint out, then
-# we will return the endpoint based on what parameters are passed. While doing an endpoint
-# for every piece of data we want to return can work for larger projects it can become
-# tedius...
+from .models import Channel, Server, ServerCategory
+from .serializers import (ChannelSerializer, ServerCategorySerializer,
+                          ServerSerializer)
 
 
-class ServerListViewSet(viewsets.ViewSet):
-
+class ServerViewSet(viewsets.ModelViewSet):
+    """
+    Provides list, create, retrieve, update, partial_update, and destroy for servers.
+    """
     queryset = Server.objects.all()
-    # permission_classes = [IsAuthenticated]
+    serializer_class = ServerSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    @server_list_docs
-    def list(self, request):
+    def perform_create(self, serializer):
+        """
+        Set the owner to the current user and auto-create default channels.
+        """
+        server = serializer.save(owner=self.request.user)
+        # Create default channels
+        Channel.objects.create(
+            name="general",
+            type=Channel.text,
+            server=server,
+            owner=self.request.user,
+            description="General text chat",
+        )
+        Channel.objects.create(
+            name="vc gener",
+            type=Channel.voice,
+            server=server,
+            owner=self.request.user,
+        )
+        return server
+
+    def get_queryset(self):
+        """
+        Optionally filter by category, user, etc., based on query params.
+        """
+        queryset = Server.objects.all()
+        request = self.request
+
         category = request.query_params.get("category")
         qty = request.query_params.get("qty")
         by_user = request.query_params.get("by_user") == "true"
@@ -30,61 +49,47 @@ class ServerListViewSet(viewsets.ViewSet):
         by_serverid = request.query_params.get("by_serverid")
         with_num_members = request.query_params.get("with_num_members") == "true"
 
-        if by_user and not request.user.is_authenticated:
-            raise AuthenticationFailed()
-
         if category:
-            self.queryset = self.queryset.filter(category__name=category)
-
-        if by_user:
-            user_id = request.user.id
-            self.queryset = self.queryset.filter(members=user_id)
-
-        if qty:
-            self.queryset = self.queryset[: int(qty)]
-
-        if with_num_members:
-            self.queryset = self.queryset.annotate(num_members=Count("members"))
-
-        # testing mutual servers
-        if mutual_with:
+            queryset = queryset.filter(category__name=category)
+        if by_user and request.user.is_authenticated:
+            queryset = queryset.filter(members=request.user.id)
+        if mutual_with and request.user.is_authenticated:
             try:
                 other_user_id = int(mutual_with)
-                self.queryset = self.queryset.filter(members=request.user.id).filter(
-                    members=other_user_id
-                )
+                queryset = queryset.filter(members=request.user.id).filter(members=other_user_id)
             except ValueError:
-                return Response({"error": "Invalid mutual_with user ID"}, status=400)
-
+                return queryset.none()
         if by_serverid:
             try:
-                self.queryset = self.queryset.filter(id=by_serverid)
-                if not self.queryset.exists():
-                    raise ValidationError(
-                        detail=f"Server with id {by_serverid} not found"
-                    )
+                queryset = queryset.filter(id=by_serverid)
             except ValueError:
-                raise ValidationError(detail=f"Server with id {by_serverid} not found")
+                return queryset.none()
+        if with_num_members:
+            queryset = queryset.annotate(num_members=Count("members"))
+        if qty:
+            try:
+                queryset = queryset[: int(qty)]
+            except ValueError:
+                pass
+        return queryset
 
-        serializer = ServerSerializer(
-            self.queryset, many=True, context={"num_members": with_num_members}
-        )
-        return Response(serializer.data)
-
+    # Optionally, override get_serializer_context to pass extra context
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["num_members"] = self.request.query_params.get("with_num_members") == "true"
+        return context
 
 class ServerCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    list:
-        Return all categories.
-
-    retrieve:
-        Return a single category by ID.
+    Provides list and retrieve for server categories.
     """
     serializer_class = ServerCategorySerializer
     queryset = ServerCategory.objects.all().order_by("name")
 
-    @extend_schema(responses=ServerCategorySerializer)
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+class ChannelViewSet(viewsets.ModelViewSet):
+    """
+    Provides full CRUD for channels.
+    """
+    serializer_class = ChannelSerializer
+    queryset = Channel.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
