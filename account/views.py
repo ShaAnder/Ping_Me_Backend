@@ -14,6 +14,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from ping_me_api.utils import generate_token, verify_token
+from server.serializers import ServerSerializer
 
 from .serializers import (AccountRegistrationSerializer, AccountSerializer,
                           PasswordResetConfirmSerializer,
@@ -182,4 +183,11 @@ class AccountViewSet(viewsets.ViewSet):
         serializer = AccountSerializer(account, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated], url_path='my_servers')
+    def my_servers(self, request):
+        account = request.user.account
+        servers = account.servers.all()  
+        serializer = ServerSerializer(servers, many=True, context={'request': request})
         return Response(serializer.data)

@@ -19,6 +19,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     image = serializers.ImageField(write_only=True, required=False, allow_null=True)
     image_url = serializers.SerializerMethodField()
+    
 
     def validate_image(self, value):
         return validate_image_file(value)
