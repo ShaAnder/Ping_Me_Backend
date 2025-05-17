@@ -13,11 +13,3 @@ class Messages(models.Model):
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_updated = models.DateTimeField(auto_now=True)
 
-# class LastChannel(models.Model):
-#     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-#     server_id = models.CharField(max_length=255)
-#     channel_id = models.CharField(max_length=255)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-#     class Meta:
-#         unique_together = ("user", "server_id")
