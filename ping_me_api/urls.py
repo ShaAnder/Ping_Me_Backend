@@ -32,7 +32,6 @@ router.register(r"api/categories", ServerCategoryViewSet, basename="categories")
 router.register(r"api/channels", ChannelViewSet, basename="channels")
 router.register(r"api/messages", MessageViewSet, basename="messages")
 router.register(r"api/account", AccountViewSet, basename="account")
-# router.register(r"servers/(?P<server_pk>[^/.]+)/last-channel", LastChannelViewSet, basename="last-channel")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

@@ -34,7 +34,7 @@ class ServerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Server
-        exclude = ("members",)
+        fields="__all__"
 
     @extend_schema_field(serializers.IntegerField(allow_null=True))
     def get_num_members(self, obj):
