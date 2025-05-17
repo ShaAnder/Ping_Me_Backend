@@ -22,7 +22,6 @@ class ChatConsumer(JsonWebsocketConsumer):
             self.close()
             return
 
-
         # build one unique room name, to prevent same id diff server
         self.room_group_name = f"chat_s{self.server_id}_c{self.channel_id}"
         
@@ -39,8 +38,11 @@ class ChatConsumer(JsonWebsocketConsumer):
         message = content["message"]
 
         conversation, created = ConversationModel.objects.get_or_create(channel_id=channel_id)
-
         new_message = Messages.objects.create(conversation=conversation, sender=sender, content=message)
+
+        # Get sender's avatar image URL
+        account = getattr(sender, "account", None)
+        avatar_url = account.image.url if account and account.image else None
 
         # only broadcast to the exact room group
         async_to_sync(self.channel_layer.group_send)(
@@ -51,9 +53,10 @@ class ChatConsumer(JsonWebsocketConsumer):
                     "id": new_message.id,
                     "sender": new_message.sender.username,
                     "content": new_message.content,
-                    "timestamp": [new_message.timestamp_created.isoformat(), new_message.timestamp_updated.isoformat()],
+                    "timestamp_created": new_message.timestamp_created.isoformat(),
+                    "timestamp_updated": new_message.timestamp_updated.isoformat(),
+                    "avatarUrl": avatar_url,  # <-- Added avatarUrl here
                 }
-                
             }
         )
 
@@ -64,5 +67,5 @@ class ChatConsumer(JsonWebsocketConsumer):
         })
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(self.channel_id, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
         super().disconnect(close_code)
