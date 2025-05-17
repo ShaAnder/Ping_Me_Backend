@@ -17,9 +17,8 @@ class ServerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        server = serializer.save(owner=self.request.user)
-        server.members.add(self.request.user.account)  # Add creator as member
-        serializer.save(owner=self.request.user.account)
+        server = serializer.save(owner=self.request.user.account)
+        server.members.add(self.request.user.account) 
         Channel.objects.create(
             name="general",
             type=Channel.text,
