@@ -4,6 +4,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from ping_me_api.permissions import IsOwnerOrReadOnly
+
 from .models import Channel, Server, ServerCategory
 from .serializers import (ChannelSerializer, ServerCategorySerializer,
                           ServerSerializer)
@@ -99,4 +101,4 @@ class ChannelViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ChannelSerializer
     queryset = Channel.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]

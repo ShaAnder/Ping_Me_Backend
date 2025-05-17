@@ -13,6 +13,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from ping_me_api.permissions import IsOwnerOrReadOnly
 from ping_me_api.utils import generate_token, verify_token
 from server.serializers import ServerSerializer
 
@@ -177,7 +178,7 @@ class AccountViewSet(viewsets.ViewSet):
         serializer = AccountSerializer(account)
         return Response(serializer.data)
     
-    @action(detail=False, methods=['patch'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['patch'], permission_classes=[IsAuthenticated, IsOwnerOrReadOnly])
     def edit_me(self, request):
         account = request.user.account
         serializer = AccountSerializer(account, data=request.data, partial=True)
@@ -185,7 +186,7 @@ class AccountViewSet(viewsets.ViewSet):
         serializer.save()
         return Response(serializer.data)
     
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated], url_path='my_servers')
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated, IsOwnerOrReadOnly], url_path='my_servers')
     def my_servers(self, request):
         account = request.user.account
         servers = account.servers.all()  

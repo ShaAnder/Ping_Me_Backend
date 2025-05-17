@@ -1,19 +1,14 @@
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 
+from ping_me_api.permissions import IsOwnerOrReadOnly
+
 from .models import ConversationModel, Messages
 from .serializers import MessageSerializer
 
 
-class IsSenderOrReadOnly(permissions.BasePermission):
-    """
-    Custom permission to only allow the sender of a message to edit or delete it.
-    """
-    def has_object_permission(self, request, view, obj):
-        return request.method in permissions.SAFE_METHODS or obj.sender == request.user
-
 class MessageViewSet(viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsSenderOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     def list(self, request):
         channel_id = request.query_params.get("channel_id")
