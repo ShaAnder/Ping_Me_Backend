@@ -44,6 +44,11 @@ class ChatConsumer(JsonWebsocketConsumer):
         account = getattr(sender, "account", None)
         avatar_url = account.image.url if account and account.image else None
 
+        print("Sender:", sender)
+        print("Account:", account)
+        print("Account image:", account.image if account else None)
+        print("Avatar URL:", avatar_url)
+
         # only broadcast to the exact room group
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
