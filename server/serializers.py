@@ -15,6 +15,7 @@ class ChannelSerializer(serializers.ModelSerializer):
 class ServerSerializer(serializers.ModelSerializer):
     num_members = serializers.SerializerMethodField()
     channel_server = ChannelSerializer(many=True, read_only=True)
+    owner_id = serializers.ReadOnlyField(source="owner.id")
     owner = serializers.ReadOnlyField(source="owner.owner.username")
     category_name = serializers.CharField(source="category.name", read_only=True)
 
