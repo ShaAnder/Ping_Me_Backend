@@ -17,7 +17,11 @@ class ChatConsumer(JsonWebsocketConsumer):
         self.server_id  = self.scope["url_route"]["kwargs"]["serverId"]
         self.channel_id = self.scope["url_route"]["kwargs"]["channelId"]
 
-        self.user = User.objects.get(id=1)
+        self.user = self.scope["user"]
+        if not self.user.is_authenticated:
+            self.close()
+            return
+
 
         # build one unique room name, to prevent same id diff server
         self.room_group_name = f"chat_s{self.server_id}_c{self.channel_id}"
