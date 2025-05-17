@@ -9,9 +9,9 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 
 import os
 
-from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
+from webchat.middleware import TokenAuthMiddleware
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ping_me_api.settings")
 
@@ -23,7 +23,7 @@ from .routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": django_application,
-    "websocket": AuthMiddlewareStack(
+    "websocket": TokenAuthMiddleware(
         URLRouter(websocket_urlpatterns)
     ),
 })
