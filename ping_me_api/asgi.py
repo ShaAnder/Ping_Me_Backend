@@ -18,13 +18,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ping_me_api.settings")
 django_application = get_asgi_application()
 
 # Import after Django setup
-from webchat.middleware import TokenAuthMiddleware
+from webchat.middleware import JWTAuthMiddleware
 
 from .routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": django_application,
-    "websocket": TokenAuthMiddleware(
+    "websocket": JWTAuthMiddleware(
         URLRouter(websocket_urlpatterns)
     ),
 })
