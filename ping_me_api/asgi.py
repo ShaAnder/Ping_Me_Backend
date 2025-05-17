@@ -11,7 +11,6 @@ import os
 
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-from webchat.middleware import TokenAuthMiddleware
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ping_me_api.settings")
 
@@ -19,6 +18,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ping_me_api.settings")
 django_application = get_asgi_application()
 
 # Import after Django setup
+from webchat.middleware import TokenAuthMiddleware
+
 from .routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
