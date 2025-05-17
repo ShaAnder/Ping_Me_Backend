@@ -1,4 +1,5 @@
-# middleware.py
+# webchat/middleware.py
+
 from urllib.parse import parse_qs
 
 from channels.db import database_sync_to_async
@@ -6,28 +7,22 @@ from django.contrib.auth.models import AnonymousUser
 
 
 class TokenAuthMiddleware:
-    def __init__(self, inner):
-        self.inner = inner
+    """
+    Custom token auth middleware for Django Channels 3.x/4.x
+    """
+    def __init__(self, app):
+        self.app = app
 
-    def __call__(self, scope):
-        return TokenAuthMiddlewareInstance(scope, self)
-
-class TokenAuthMiddlewareInstance:
-    def __init__(self, scope, middleware):
-        self.scope = dict(scope)
-        self.middleware = middleware
-
-    async def __call__(self, receive, send):
-        # Import Token model here, inside the coroutine
+    async def __call__(self, scope, receive, send):
+        # Import Token model here
         from rest_framework.authtoken.models import Token
-        query_string = self.scope.get('query_string', b'').decode()
+        query_string = scope.get('query_string', b'').decode()
         token_key = parse_qs(query_string).get('token')
         user = AnonymousUser()
         if token_key:
             user = await self.get_user(token_key[0])
-        self.scope['user'] = user
-        inner = self.middleware.inner(self.scope)
-        return await inner(receive, send)
+        scope['user'] = user
+        return await self.app(scope, receive, send)
 
     @database_sync_to_async
     def get_user(self, token_key):
