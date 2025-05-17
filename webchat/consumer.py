@@ -40,30 +40,32 @@ class ChatConsumer(JsonWebsocketConsumer):
         conversation, created = ConversationModel.objects.get_or_create(channel_id=channel_id)
         new_message = Messages.objects.create(conversation=conversation, sender=sender, content=message)
 
-        # Get sender's avatar image URL
+        # Get sender's Account and avatar image URL
         account = getattr(sender, "account", None)
         avatar_url = account.image.url if account and account.image else None
+        sender_username = account.username if account else sender.username
 
         print("Sender:", sender)
         print("Account:", account)
         print("Account image:", account.image if account else None)
         print("Avatar URL:", avatar_url)
 
-        # only broadcast to the exact room group
+        # Only broadcast to the exact room group
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 "type": "chat.message",
                 "new_message": {
                     "id": new_message.id,
-                    "sender": new_message.sender.username,
+                    "sender": sender_username,  # Use Account username here
                     "content": new_message.content,
                     "timestamp_created": new_message.timestamp_created.isoformat(),
                     "timestamp_updated": new_message.timestamp_updated.isoformat(),
-                    "avatarUrl": avatar_url,  # <-- Added avatarUrl here
+                    "avatarUrl": avatar_url,
                 }
             }
         )
+
 
     def chat_message(self, event):
         # send only to sockets in this same room_group_name
