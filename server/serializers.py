@@ -19,11 +19,10 @@ class ServerSerializer(serializers.ModelSerializer):
     owner_id = serializers.ReadOnlyField(source="owner.id")
     owner = serializers.ReadOnlyField(source="owner.owner.username")
     category_name = serializers.CharField(source="category.name", read_only=True)
-    members = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    members = serializers.PrimaryKeyRelatedField(many=True, read_only=True)  # <-- FIXED
 
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_server_image_urls(self, obj):
-        # Check for server_icon and banner_image
         image_urls = {}
         if obj.server_icon:
             image_urls["server_icon_url"] = obj.server_icon.url
@@ -37,7 +36,7 @@ class ServerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Server
-        fields="__all__"
+        fields = "__all__"
 
     @extend_schema_field(serializers.IntegerField(allow_null=True))
     def get_num_members(self, obj):
@@ -57,7 +56,7 @@ class ServerSerializer(serializers.ModelSerializer):
         if request and not validated_data.get("owner"):
             validated_data["owner"] = request.user
 
-        with transaction.atomic():  # Enforce atomicity
+        with transaction.atomic():
             server = Server.objects.create(**validated_data)
 
             Channel.objects.create(
