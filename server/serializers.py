@@ -51,25 +51,6 @@ class ServerSerializer(serializers.ModelSerializer):
             data.pop("num_members", None)
         return data
 
-    def create(self, validated_data):
-        request = self.context.get("request")
-        if request and not validated_data.get("owner"):
-            validated_data["owner"] = request.user.account  # <-- FIXED
-
-        with transaction.atomic():
-            server = Server.objects.create(**validated_data)
-
-            Channel.objects.create(
-                name="general",
-                type=Channel.text,
-                server=server,
-                owner=request.user.account,  # <-- FIXED
-                description="General text chat",
-            )
-
-        return server
-
-
 
 class ServerCategorySerializer(serializers.ModelSerializer):
     class Meta:
