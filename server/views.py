@@ -26,12 +26,6 @@ class ServerViewSet(viewsets.ModelViewSet):
             owner=self.request.user.account,  # <-- FIXED
             description="General text chat",
         )
-        Channel.objects.create(
-            name="vc gener",
-            type=Channel.voice,
-            server=server,
-            owner=self.request.user.account,  # <-- FIXED
-        )
         return server
 
 

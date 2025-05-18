@@ -66,12 +66,6 @@ class ServerSerializer(serializers.ModelSerializer):
                 owner=request.user.account,  # <-- FIXED
                 description="General text chat",
             )
-            Channel.objects.create(
-                name="vc gener",
-                type=Channel.voice,
-                server=server,
-                owner=request.user.account,  # <-- FIXED
-            )
 
         return server
 

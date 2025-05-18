@@ -54,11 +54,9 @@ class Server(models.Model):
 class Channel(models.Model):
     # we want to get our choices for the chnnel
     text = "text"
-    voice = "voice"
 
     CHANNEL_TYPE_CHOICES = [
         (text, "Text"),
-        (voice, "Voice"),
     ]
 
     name = models.CharField(max_length=100)
@@ -82,9 +80,6 @@ class Channel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        # Null it out if it's a voice channel, as they don't have one
-        if self.type == self.voice:
-            self.description = None
         self.name = self.name.lower()
         super(Channel, self).save(*args, **kwargs)
 
