@@ -18,21 +18,22 @@ class ServerViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         server = serializer.save(owner=self.request.user.account)
-        server.members.add(self.request.user.account) 
+        server.members.add(self.request.user.account)
         Channel.objects.create(
             name="general",
             type=Channel.text,
             server=server,
-            owner=self.request.user,
+            owner=self.request.user.account,  # <-- FIXED
             description="General text chat",
         )
         Channel.objects.create(
             name="vc gener",
             type=Channel.voice,
             server=server,
-            owner=self.request.user,
+            owner=self.request.user.account,  # <-- FIXED
         )
         return server
+
 
     def get_queryset(self):
         queryset = Server.objects.all()
