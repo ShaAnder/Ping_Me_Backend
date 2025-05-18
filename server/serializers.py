@@ -19,6 +19,9 @@ class ServerSerializer(serializers.ModelSerializer):
     owner_id = serializers.ReadOnlyField(source="owner.id")
     owner = serializers.ReadOnlyField(source="owner.owner.username")
     category_name = serializers.CharField(source="category.name", read_only=True)
+    members = serializers.PrimaryKeyRelatedField(
+    many=True, queryset=Server.members.rel.model.objects.all(), required=False, allow_empty=True
+)
 
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_server_image_urls(self, obj):
