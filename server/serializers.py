@@ -54,7 +54,7 @@ class ServerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get("request")
         if request and not validated_data.get("owner"):
-            validated_data["owner"] = request.user
+            validated_data["owner"] = request.user.account  # <-- FIXED
 
         with transaction.atomic():
             server = Server.objects.create(**validated_data)
@@ -63,14 +63,18 @@ class ServerSerializer(serializers.ModelSerializer):
                 name="general",
                 type=Channel.text,
                 server=server,
-                owner=request.user,
+                owner=request.user.account,  # <-- FIXED
                 description="General text chat",
             )
             Channel.objects.create(
-                name="vc gener", type=Channel.voice, server=server, owner=request.user
+                name="vc gener",
+                type=Channel.voice,
+                server=server,
+                owner=request.user.account,  # <-- FIXED
             )
 
         return server
+
 
 
 class ServerCategorySerializer(serializers.ModelSerializer):
