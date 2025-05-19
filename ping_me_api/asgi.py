@@ -22,6 +22,10 @@ from webchat.middleware import JWTAuthMiddleware
 
 from .routing import websocket_urlpatterns
 
+#: The ASGI application callable for the project.
+#:
+#: Handles both HTTP and WebSocket protocols, applying JWT authentication
+#: middleware to WebSocket connections.
 application = ProtocolTypeRouter({
     "http": django_application,
     "websocket": JWTAuthMiddleware(

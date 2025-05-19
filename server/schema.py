@@ -1,8 +1,19 @@
+"""
+OpenAPI schema extension for the server list endpoint.
+
+This module defines the documentation for the server list API endpoint,
+including response schema and query parameters for use with drf_spectacular.
+"""
+
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 
 from .serializers import ChannelSerializer, ServerSerializer
 
+#: Schema extension for the server list endpoint.
+#:
+#: Adds response documentation and query parameters for filtering and customizing
+#: the server list response.
 server_list_docs = extend_schema(
     responses=ServerSerializer(many=True),
     parameters=[

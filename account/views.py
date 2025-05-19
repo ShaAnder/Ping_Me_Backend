@@ -1,3 +1,10 @@
+"""
+Views for account registration, authentication, verification, and user profile management.
+
+This module contains the AccountViewSet, which handles user registration, email verification,
+resending verification emails, password reset, and user profile endpoints for the account app.
+"""
+
 import os
 
 from django.contrib.auth.models import User
@@ -25,20 +32,31 @@ from .serializers import (AccountRegistrationSerializer, AccountSerializer,
 load_dotenv()
 
 class AccountViewSet(viewsets.ViewSet):
+    """
+    ViewSet for handling account registration, authentication, verification,
+    password reset, and user profile management.
+    """
 
-    # Registration endpoint: /api/account/register/
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def register(self, request):
+        """
+        Register a new user account.
+
+        Validates the provided registration data, creates a new user,
+        generates a verification token, and sends a verification email.
+
+        Args:
+            request (Request): The HTTP request containing registration data.
+
+        Returns:
+            Response: Success message or validation errors.
+        """
         serializer = AccountRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            # Generate uidb64 and token
             uidb64, token = generate_token(user)
-            # Build verification URL
-            # Build verification URL (as before)
             verify_url = f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/account/verify_email/?uid={uidb64}&token={token}"
             logo_url = "http://localhost:8000/static/admin/img/pingMe.png"
-            # Render HTML email template
             html_message = render_to_string(
                 'emails/verify_email.html',
                 {
@@ -51,7 +69,7 @@ class AccountViewSet(viewsets.ViewSet):
 
             send_mail(
                 'Verify your email',
-                plain_message,  # Fallback for clients that don't support HTML
+                plain_message,
                 'pingmepp5@gmail.com',
                 [user.email],
                 fail_silently=False,
@@ -60,16 +78,26 @@ class AccountViewSet(viewsets.ViewSet):
             return Response({'message': 'Registration successful. Check your email.'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # Email verification endpoint: /api/account/verify_email/
     @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def verify_email(self, request):
+        """
+        Verify a user's email address.
+
+        Validates the provided UID and token, activates the user if valid,
+        and redirects to the frontend.
+
+        Args:
+            request (Request): The HTTP request containing UID and token.
+
+        Returns:
+            HttpResponseRedirect or Response: Redirects on success, error message otherwise.
+        """
         uidb64 = request.GET.get('uid')
         token = request.GET.get('token')
         user = verify_token(uidb64, token)
         if user:
             user.is_active = True
             user.save()
-            # Use environment variable to determine redirect URL
             if os.environ.get("DEV"):
                 redirect_url = os.environ.get("CLIENT_ORIGIN_DEV")
             else:
@@ -77,9 +105,17 @@ class AccountViewSet(viewsets.ViewSet):
             return HttpResponseRedirect(redirect_url)
         return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    #Resend the email
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def resend_verification(self, request):
+        """
+        Resend the email verification link to the user.
+
+        Args:
+            request (Request): The HTTP request containing the user's email.
+
+        Returns:
+            Response: Success message or error.
+        """
         serializer = ResendVerificationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
@@ -91,7 +127,6 @@ class AccountViewSet(viewsets.ViewSet):
             verify_url = (
                 f"https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/account/verify_email/?uid={uidb64}&token={token}"
             )
-            # Send the email
             send_mail(
                 'Verify your email',
                 f"Hi {user.username}, click to verify: {verify_url}",
@@ -101,12 +136,19 @@ class AccountViewSet(viewsets.ViewSet):
             )
             return Response({'message': 'Verification email resent.'}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            # For security, do not reveal if the email is not registered
             return Response({'message': 'If this email is registered and not yet verified, a verification email has been sent.'}, status=status.HTTP_200_OK)
 
-    # Forgot password endpoint: /api/account/password_reset/
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def password_reset(self, request):
+        """
+        Send a password reset email to the user.
+
+        Args:
+            request (Request): The HTTP request containing the user's email.
+
+        Returns:
+            Response: Success message regardless of whether the email exists.
+        """
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
@@ -118,7 +160,6 @@ class AccountViewSet(viewsets.ViewSet):
                 frontend_origin = os.environ.get("CLIENT_ORIGIN_DEV")
             else:
                 frontend_origin = os.environ.get("CLIENT_ORIGIN")
-
             reset_url = f"{frontend_origin}/app/reset/{uid}/{token}"
             logo_url = "http://localhost:8000/static/admin/img/pingMe.png"
             html_message = render_to_string(
@@ -142,9 +183,17 @@ class AccountViewSet(viewsets.ViewSet):
             pass
         return Response({'message': 'If this email is registered, a password reset link has been sent.'})
 
-    # Reset confirmation endpoint: /api/account/password_reset_confirm/
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def password_reset_confirm(self, request):
+        """
+        Confirm a password reset and set a new password for the user.
+
+        Args:
+            request (Request): The HTTP request containing the UID, token, and new password.
+
+        Returns:
+            Response: Success message and redirect URL, or error message.
+        """
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         uid = serializer.validated_data['uid']
@@ -169,26 +218,55 @@ class AccountViewSet(viewsets.ViewSet):
         except Exception:
             return Response({'error': 'Invalid request.'}, status=400)
 
-#--------------------------#
-###### user endpoints ######
-
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def me(self, request):
+        """
+        Retrieve the authenticated user's account details.
+
+        Args:
+            request (Request): The HTTP request.
+
+        Returns:
+            Response: The user's account data.
+        """
         account = request.user.account
         serializer = AccountSerializer(account)
         return Response(serializer.data)
     
     @action(detail=False, methods=['patch'], permission_classes=[IsAuthenticated, IsOwnerOrReadOnly])
     def edit_me(self, request):
+        """
+        Edit the authenticated user's account.
+
+        Args:
+            request (Request): The HTTP request containing updated account data.
+
+        Returns:
+            Response: The updated account data.
+        """
         account = request.user.account
         serializer = AccountSerializer(account, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
     
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated, IsOwnerOrReadOnly], url_path='my_servers')
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticated, IsOwnerOrReadOnly],
+        url_path='my_servers'
+    )
     def my_servers(self, request):
+        """
+        Retrieve the list of servers the authenticated user is a member of.
+
+        Args:
+            request (Request): The HTTP request.
+
+        Returns:
+            Response: Serialized list of servers.
+        """
         account = request.user.account
-        servers = account.servers.all()  
+        servers = account.servers.all()
         serializer = ServerSerializer(servers, many=True, context={'request': request})
         return Response(serializer.data)

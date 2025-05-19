@@ -1,3 +1,10 @@
+"""
+WebSocket consumer for real-time chat functionality in the webchat app.
+
+Defines the ChatConsumer for handling WebSocket connections, message broadcasting,
+and message persistence in chat channels.
+"""
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import get_user_model
@@ -7,13 +14,27 @@ from .models import ConversationModel, Messages
 User = get_user_model()
 
 class ChatConsumer(JsonWebsocketConsumer):
+    """
+    WebSocket consumer for handling chat messages in a channel.
+
+    Handles connection, message receipt, broadcasting, and disconnect logic.
+    """
+
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the consumer and set default attributes.
+        """
         super().__init__(*args, **kwargs)
         self.channel_id = None
         self.user = None
 
     def connect(self):
-        # pull both IDs out of the URL
+        """
+        Handle WebSocket connection.
+
+        Extracts server and channel IDs from the URL, authenticates the user,
+        and joins the appropriate room group for message broadcasting.
+        """
         self.server_id  = self.scope["url_route"]["kwargs"]["serverId"]
         self.channel_id = self.scope["url_route"]["kwargs"]["channelId"]
 
@@ -22,10 +43,10 @@ class ChatConsumer(JsonWebsocketConsumer):
             self.close()
             return
 
-        # build one unique room name, to prevent same id diff server
+        # Build a unique room name to prevent ID collisions across servers
         self.room_group_name = f"chat_s{self.server_id}_c{self.channel_id}"
         
-        # accept the WS, then join the correctly‑named group
+        # Accept the WebSocket connection and join the group
         self.accept()
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -33,6 +54,15 @@ class ChatConsumer(JsonWebsocketConsumer):
         )
 
     def receive_json(self, content, **kwargs):
+        """
+        Handle receipt of a JSON message from the WebSocket.
+
+        Saves the message to the database and broadcasts it to the room group.
+
+        Args:
+            content (dict): The JSON message content.
+            **kwargs: Additional keyword arguments.
+        """
         channel_id = self.channel_id
         sender = self.user
         message = content["message"]
@@ -69,14 +99,26 @@ class ChatConsumer(JsonWebsocketConsumer):
             }
         )
 
-
     def chat_message(self, event):
-        # send only to sockets in this same room_group_name
+        """
+        Handler for broadcasting a chat message to all sockets in the room group.
+
+        Args:
+            event (dict): The event data containing the new message.
+        """
         self.send_json({
             "message": event["new_message"]
         })
 
     def disconnect(self, close_code):
+        """
+        Handle WebSocket disconnection.
+
+        Removes the socket from the room group.
+        
+        Args:
+            close_code (int): The close code for the WebSocket connection.
+        """
         if hasattr(self, "room_group_name"):
             async_to_sync(self.channel_layer.group_discard)(
                 self.room_group_name, self.channel_name

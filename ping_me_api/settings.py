@@ -24,7 +24,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -125,10 +124,8 @@ TEMPLATES = [
     },
 ]
 
-# Get the REDIS_URL from environment variables or default to localhost for development
+# Redis/Channels configuration for async support (WebSockets, etc.)
 redis_url = os.environ.get("REDIS_URL")
-
-# Append the param if not already present
 if redis_url:
     if "?" in redis_url:
         redis_url += "&ssl_cert_reqs=none&ssl_check_hostname=false"
@@ -146,9 +143,8 @@ CHANNEL_LAYERS = {
 
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
 ASGI_APPLICATION = "ping_me_api.asgi.application"
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Database configuration
 if os.environ.get("DEV"):
     DATABASES = {
         "default": {
@@ -162,26 +158,7 @@ else:
         raise Exception("DATABASE_URL is not set and DEV is not enabled!")
     DATABASES = {"default": dj_database_url.parse(db_url)}
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django.db.backends': {
-#             'level': 'DEBUG',
-#             'handlers': ['console'],
-#         },
-#     },
-# }
-
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -197,18 +174,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
-
 
 # Static files configuration
 STATIC_URL = '/static/'
@@ -216,13 +186,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Django REST Framework settings
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    # authenticate our users
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
@@ -232,14 +200,15 @@ REST_FRAMEWORK = {
     ),
 }
 
+# drf-spectacular (OpenAPI/Swagger) settings
 SPECTACULAR_SETTINGS = {
     "TITLE": "Ping Me API",
     "DESCRIPTION": "API for the backend of the ping me api a lightweight discord clone!",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": True,
-    # OTHER SETTINGS
 }
 
+# JWT authentication settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=4),
@@ -249,14 +218,14 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }   
 
+# REST Registration settings
 REST_REGISTRATION = {
     "REGISTER_VERIFICATION_ENABLED": True,
     "REGISTER_EMAIL_VERIFICATION_ENABLED": True,
     "REGISTER_EMAIL_VERIFICATION_URL": "https://your-frontend-domain/verify-email/",
-    # And other settings as needed
 }
 
-# DJANGO EMAIL SETUP
+# Django email setup
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

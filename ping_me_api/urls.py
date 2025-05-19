@@ -26,6 +26,7 @@ from account.views import AccountViewSet
 from server.views import ChannelViewSet, ServerCategoryViewSet, ServerViewSet
 from webchat.views import MessageViewSet
 
+# Register API endpoints with the router
 router = DefaultRouter()
 router.register(r"api/servers", ServerViewSet, basename="servers")
 router.register(r"api/categories", ServerCategoryViewSet, basename="categories")
@@ -33,15 +34,16 @@ router.register(r"api/channels", ChannelViewSet, basename="channels")
 router.register(r"api/messages", MessageViewSet, basename="messages")
 router.register(r"api/account", AccountViewSet, basename="account")
 
+#: The list of URL patterns for the project.
+#:
+#: Includes admin, API docs, JWT authentication, and all registered API endpoints.
 urlpatterns = [
+    # Django admin panel
     path("admin/", admin.site.urls),
-    # view the docs
+    # OpenAPI schema and Swagger UI
     path("api/docs/schema/", SpectacularAPIView.as_view(), name="schema"),
-    # view the ui
     path("api/docs/schema/ui/", SpectacularSwaggerView.as_view()),
-    # jwt paths
+    # JWT authentication endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ] + router.urls
-
-
