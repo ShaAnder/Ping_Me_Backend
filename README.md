@@ -53,7 +53,9 @@ This was our chief message model each one created a message object, we took this
 
 ## API endpoints
 
-A list of all api endpoints can be found in our [schema](https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/docs/schema/ui/#/)
+A list of all api endpoints can be found in our [schema](https://ping-me-pp5-backend-6aaeef173b97.herokuapp.com/api/docs/schema/ui/#/) 
+To test this schema and the api endpoints the tester must be authorized, to authorize use the test user credentials provided or create an account, and 
+run the token auth endpoint to get an auth token. Posting said auth token into the authorize will allow you access to the scema api
 
 ## Frameworks, libraries and dependencies
 ### django-cloudinary-storage
