@@ -57,11 +57,14 @@ class ChatConsumer(JsonWebsocketConsumer):
                 "type": "chat.message",
                 "new_message": {
                     "id": new_message.id,
-                    "sender": sender_username,  # Use Account username here
+                    "user": {
+                        "id": sender.id,
+                        "username": sender_username,
+                        "image_url": avatar_url,
+                    },
                     "content": new_message.content,
                     "timestamp_created": new_message.timestamp_created.isoformat(),
                     "timestamp_updated": new_message.timestamp_updated.isoformat(),
-                    "avatarUrl": avatar_url,
                 }
             }
         )
