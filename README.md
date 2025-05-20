@@ -31,7 +31,9 @@ Planning started by creating epics and user stories for the frontend application
 ### Data models
 Data model schema were planned in parallel with the API endpoints, using an entity relationship diagram.
 
-Custom models implemented for Ping me were
+[ERD Diagram](readme_assets/erd.png)
+
+For this project seeing as an ERD diagram was essential for app planning, i built one to cover what we needed out of this application, as the user is the one who will be in control of everything from server and channel creation to the chatting we decided to put them as the primary focal point, various features like the server and conversation models are tied back to the user via foreign keys. And uses viewsets to execute the various functions and abilities of the api. Below i will cover the custom models a bit
 
 #### **Account**
 Represents the user Account, using a one-to-one relationsip to the user model. A Account instance is automatically created on user registration. The Account model includes includes various fields that we the dev can use to distinguish it and link it to other parts of the app
@@ -99,107 +101,9 @@ https://channels.readthedocs.io/en/latest/
 
 This django add on was our primary means of setting up and maintaining websockets for real time communication coupling this with redis servers from heroku allowed us to create a fully functioning real time application akin to discord
 
+## Future Features
 
-## Testing
-
-### Manual testing
-
-A series of manual tests were undertaken to determine api viability, and test to see if the user got the correct details back, as well as this we double and triple checked every endpoint to make sure the user needs authentication to access any of these endpoints
-
-|                 TEST                  |              Expected outcome              |              Actual outcome               | Pass/Fail |
-| :-----------------------------------: | :----------------------------------------: | :---------------------------------------: | :-------: |
-|     POST /auth/register (valid)      | 201 Created, user object, email sent       | 201 Created, user object, email sent      |   Pass    |
-|   POST /auth/register (invalid)      | 400 Bad Request, validation errors         | 400 Bad Request, validation errors        |   Pass    |
-|    POST /auth/login (valid creds)    | 200 OK, JWT token returned                 | 200 OK, JWT token returned                |   Pass    |
-|  POST /auth/login (invalid creds)    | 401 Unauthorized, error message            | 401 Unauthorized, error message           |   Pass    |
-| POST /auth/login (unverified email)  | 403 Forbidden, verification prompt         | 403 Forbidden, verification prompt        |   Pass    |
-|         POST /auth/logout            | 200 OK, token invalidated                  | 200 OK, token invalidated                 |   Pass    |
-|      POST /auth/verify-email         | 200 OK, user status updated                | 200 OK, user status updated               |   Pass    |
-| POST /auth/resend-verification       | 200 OK, verification email sent            | 200 OK, verification email sent           |   Pass    |
-|          GET /users/me               | 200 OK, user profile returned              | 200 OK, user profile returned             |   Pass    |
-|     PATCH /users/me (valid data)     | 200 OK, profile updated                    | 200 OK, profile updated                   |   Pass    |
-|   PATCH /users/me (invalid data)     | 400 Bad Request, validation errors         | 400 Bad Request, validation errors        |   Pass    |
-|          DELETE /users/me            | 204 No Content, user deleted               | 204 No Content, user deleted              |   Pass    |
-|            GET /servers              | 200 OK, list of servers                    | 200 OK, list of servers                   |   Pass    |
-|    POST /servers (valid data)        | 201 Created, server returned               | 201 Created, server returned              |   Pass    |
-| POST /servers (duplicate name)       | 409 Conflict, error message                | 409 Conflict, error message               |   Pass    |
-|   PATCH /servers/:id (is owner)      | 200 OK, server updated                     | 200 OK, server updated                    |   Pass    |
-| PATCH /servers/:id (not owner)       | 403 Forbidden, action blocked              | 403 Forbidden, action blocked             |   Pass    |
-|  DELETE /servers/:id (is owner)      | 204 No Content, server deleted             | 204 No Content, server deleted            |   Pass    |
-| DELETE /servers/:id (not owner)      | 403 Forbidden, action blocked              | 403 Forbidden, action blocked             |   Pass    |
-|     GET /servers/:id/channels        | 200 OK, list of channels                   | 200 OK, list of channels                  |   Pass    |
-|  POST /channels (admin permission)   | 201 Created, channel returned              | 201 Created, channel returned             |   Pass    |
-| POST /channels (no admin rights)     | 403 Forbidden, action blocked              | 403 Forbidden, action blocked             |   Pass    |
-| PATCH /channels/:id (admin)          | 200 OK, channel updated                    | 200 OK, channel updated                   |   Pass    |
-| PATCH /channels/:id (not admin)      | 403 Forbidden, action blocked              | 403 Forbidden, action blocked             |   Pass    |
-| DELETE /channels/:id (admin)         | 204 No Content, channel deleted            | 204 No Content, channel deleted           |   Pass    |
-| DELETE /channels/:id (not admin)     | 403 Forbidden, action blocked              | 403 Forbidden, action blocked             |   Pass    |
-|           GET /categories            | 200 OK, list of categories                 | 200 OK, list of categories                |   Pass    |
-|     GET /categories/{id}            | 200 OK, category details                   | 200 OK, category details                  |   Pass    |
-| GET /servers?category=xyz            | 200 OK, filtered servers returned          | 200 OK, filtered servers returned         |   Pass    |
-|       GET /protected (no auth)       | 401 Unauthorized, error message            | 401 Unauthorized, error message           |   Pass    |
-| GET /admin-only (user role)          | 403 Forbidden, access denied               | 403 Forbidden, access denied              |   Pass    |
-|      GET /unknown-route              | 404 Not Found, error message               | 404 Not Found, error message              |   Pass    |
-|     API error returns JSON object    | Proper JSON error message                  | Proper JSON error message                 |   Pass    |
-|      Rate limit exceeded             | 429 Too Many Requests, rate error          | 429 Too Many Requests, rate error         |   Pass    |
-|        CORS headers present          | Access-Control-Allow-Origin in headers     | Access-Control-Allow-Origin in headers    |   Pass    |
-|  All endpoints require auth (secure) | 401 Unauthorized for unauthenticated users | 401 Unauthorized for unauthenticated users|   Pass    |
-| GET /api/account/me/                 | 200 OK, user data returned                 | 200 OK, user data returned                |   Pass    |
-| PATCH /api/account/edit_me/          | 200 OK, user updated                       | 200 OK, user updated                      |   Pass    |
-| GET /api/account/my_servers/         | 200 OK, servers returned                   | 200 OK, servers returned                  |   Pass    |
-| POST /api/account/password_reset/    | 200 OK, email sent                         | 200 OK, email sent                        |   Pass    |
-| POST /api/account/password_reset_confirm/ | 200 OK, password updated             | 200 OK, password updated                  |   Pass    |
-| POST /api/account/register/          | 201 Created, email sent                    | 201 Created, email sent                   |   Pass    |
-| POST /api/account/resend_verification/| 200 OK, email sent                        | 200 OK, email sent                        |   Pass    |
-| GET /api/account/verify_email/       | 200 OK, email verified                     | 200 OK, email verified                    |   Pass    |
-| GET /api/channels/                   | 200 OK, list of channels                   | 200 OK, list of channels                  |   Pass    |
-| POST /api/channels/                  | 201 Created, new channel                   | 201 Created, new channel                  |   Pass    |
-| GET /api/channels/{id}/             | 200 OK, channel details                    | 200 OK, channel details                   |   Pass    |
-| PUT /api/channels/{id}/             | 200 OK, full update                        | 200 OK, full update                       |   Pass    |
-| PATCH /api/channels/{id}/           | 200 OK, partial update                     | 200 OK, partial update                    |   Pass    |
-| DELETE /api/channels/{id}/          | 204 No Content, channel deleted            | 204 No Content, channel deleted           |   Pass    |
-| GET /api/docs/schema/                | 200 OK, schema returned                    | 200 OK, schema returned                   |   Pass    |
-| GET /api/messages/                   | 200 OK, list of messages                   | 200 OK, list of messages                  |   Pass    |
-| GET /api/messages/{id}/             | 200 OK, message details                    | 200 OK, message details                   |   Pass    |
-| PATCH /api/messages/{id}/           | 200 OK, message updated                    | 200 OK, message updated                   |   Pass    |
-| GET /api/servers/                    | 200 OK, list of servers                    | 200 OK, list of servers                   |   Pass    |
-| POST /api/servers/                   | 201 Created, new server                    | 201 Created, new server                   |   Pass    |
-| GET /api/servers/{id}/              | 200 OK, server details                     | 200 OK, server details                    |   Pass    |
-| PUT /api/servers/{id}/              | 200 OK, full update                        | 200 OK, full update                       |   Pass    |
-| PATCH /api/servers/{id}/            | 200 OK, partial update                     | 200 OK, partial update                    |   Pass    |
-| DELETE /api/servers/{id}/           | 204 No Content, server deleted             | 204 No Content, server deleted            |   Pass    |
-| POST /api/servers/{id}/add_member/   | 200 OK, member added                       | 200 OK, member added                      |   Pass    |
-| POST /api/servers/{id}/remove_member/| 200 OK, member removed                     | 200 OK, member removed                    |   Pass    |
-| POST /api/token/                     | 200 OK, access and refresh tokens returned | 200 OK, access and refresh tokens returned|   Pass    |
-| POST /api/token/refresh/            | 200 OK, new access token returned          | 200 OK, new access token returned         |   Pass    |
-
-
-
-
-### Automated tests
-
-Nine unit tests were written for the `contacts` endpoint. These are in `contacts/tests.py`, and all passed:
-
-- Test that the Server administrator can list contacts for their Server.
-- Test that a Server member with no admin status in the same Server can list contacts.
-- Test that an unauthenticated user cannot list contacts.
-- Test that a Server administrator can create a new contact for their Server.
-- Test that a Server member without admin status cannot create a new contact.
-- Test that an unauthenticated user cannot create a new contact.
-- Test that a Server administrator can delete a contact.
-- Test that a Server member without admin status cannot delete a contact.
-- Test than an unauthenticated user cannot delete a contact.
-
-As well as this all code was written using automated unit test in parallel to enssure that they passed, tests were written to fail the code until the code passed the specific criteria
-
-
-### Python validation
-
-All files were validated via pep8 standards and came out okay with no critical errors
-
-### Bugs
-
-To date there are no bugs in the backend code, all api endpoints work correctly and the code base is solid and allows the user to acccess the app with no problems
+While this api is largely complete I feel there are a few ways I could have improved upon it, such as adding the ability to message batch and changing how the conversation model works when getting user messages. SO these are key features I plan to take a look at after I complete the course.
 
 ## Deployment
 The api is deployed to heroku via github utilizing a redis key value pair package (Heroku key value pair)

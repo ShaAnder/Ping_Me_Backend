@@ -75,15 +75,18 @@ class Server(models.Model):
         Account, on_delete=models.CASCADE, related_name="server_owner"
     )
     category = models.ForeignKey(
-        ServerCategory, on_delete=models.PROTECT, related_name="server_category"
+        ServerCategory, on_delete=models.PROTECT,
+        related_name="server_category"
     )
     description = models.CharField(max_length=255, blank=True, null=True)
     members = models.ManyToManyField(Account, related_name="servers")
     server_icon = CloudinaryField(
-        "server icon", folder="ServerIcons", default="default_server_uxlg3a.jpg"
+        "server icon", folder="ServerIcons",
+        default="default_server_uxlg3a.jpg"
     )
     banner_image = CloudinaryField(
-        "server banner", folder="ServerIcons", default="default_server_uxlg3a.jpg"
+        "server banner", folder="ServerIcons",
+        default="default_server_uxlg3a.jpg"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
