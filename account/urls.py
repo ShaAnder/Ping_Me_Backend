@@ -9,6 +9,5 @@ from django.urls import path
 from account import views
 
 urlpatterns = [
-    # Add account-related paths here, e.g.:
-    # path('register/', views.RegisterView.as_view(), name='account-register'),
+
 ]

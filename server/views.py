@@ -26,7 +26,7 @@ class ServerViewSet(viewsets.ModelViewSet):
     """
     queryset = Server.objects.all()
     serializer_class = ServerSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
         """

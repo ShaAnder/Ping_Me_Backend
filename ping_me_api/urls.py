@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
 from account.views import AccountViewSet
+from ping_me_api.views import custom_404, custom_500
 from server.views import ChannelViewSet, ServerCategoryViewSet, ServerViewSet
 from webchat.views import MessageViewSet
 
@@ -33,6 +34,7 @@ router.register(r"api/categories", ServerCategoryViewSet, basename="categories")
 router.register(r"api/channels", ChannelViewSet, basename="channels")
 router.register(r"api/messages", MessageViewSet, basename="messages")
 router.register(r"api/account", AccountViewSet, basename="account")
+
 
 #: The list of URL patterns for the project.
 #:
@@ -47,3 +49,8 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ] + router.urls
+
+# custom error handlers
+
+handler404 = 'ping_me_api.views.custom_404'
+handler500 = 'ping_me_api.views.custom_500'

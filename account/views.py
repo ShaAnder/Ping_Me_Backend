@@ -36,6 +36,7 @@ class AccountViewSet(viewsets.ViewSet):
     ViewSet for handling account registration, authentication, verification,
     password reset, and user profile management.
     """
+    serializer_class = AccountSerializer
 
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def register(self, request):
@@ -51,6 +52,7 @@ class AccountViewSet(viewsets.ViewSet):
         Returns:
             Response: Success message or validation errors.
         """
+
         serializer = AccountRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
