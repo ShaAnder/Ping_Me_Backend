@@ -173,3 +173,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+OPTIMIZATION_SUGGESTIONS.md
+BACKEND_OPTIMIZATION_SUGGESTIONS.md
+webchat/test_message_queryset.py
+server/test_channel_queryset.py
+server/test_server_queryset.py
+account/test_account_my_servers.py

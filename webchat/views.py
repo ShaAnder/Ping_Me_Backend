@@ -53,9 +53,9 @@ class MessageViewSet(viewsets.ViewSet):
             Response: List of serialized messages or an empty list.
         """
         channel_id = request.query_params.get("channel_id")
-        conversation = ConversationModel.objects.filter(channel_id=channel_id).first()
+        conversation = ConversationModel.objects.filter(channel_id=channel_id).select_related().first()
         if conversation:
-            messages = conversation.messages.all()
+            messages = conversation.messages.select_related("conversation").select_related("sender").all()
             serializer = MessageSerializer(messages, many=True)
             return Response(serializer.data)
         return Response([])

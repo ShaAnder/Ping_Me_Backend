@@ -24,7 +24,7 @@ class ServerViewSet(viewsets.ModelViewSet):
 
     Supports creation, listing, filtering, and member management for servers.
     """
-    queryset = Server.objects.all()
+    queryset = Server.objects.select_related("owner", "category").prefetch_related("members", "channel_server").all()
     serializer_class = ServerSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
@@ -60,7 +60,7 @@ class ServerViewSet(viewsets.ModelViewSet):
         Returns:
             QuerySet: The filtered queryset.
         """
-        queryset = Server.objects.all()
+        queryset = Server.objects.select_related("owner", "category").prefetch_related("members", "channel_server").all()
         request = self.request
         category = request.query_params.get("category")
         qty = request.query_params.get("qty")
@@ -152,7 +152,7 @@ class ChannelViewSet(viewsets.ModelViewSet):
     ViewSet for full CRUD operations on channels.
     """
     serializer_class = ChannelSerializer
-    queryset = Channel.objects.all()
+    queryset = Channel.objects.select_related("owner", "server").all()
     permission_classes = [IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):

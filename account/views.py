@@ -269,6 +269,6 @@ class AccountViewSet(viewsets.ViewSet):
             Response: Serialized list of servers.
         """
         account = request.user.account
-        servers = account.servers.all()
+        servers = account.servers.select_related("owner", "category").prefetch_related("members", "channel_server").all()
         serializer = ServerSerializer(servers, many=True, context={'request': request})
         return Response(serializer.data)
