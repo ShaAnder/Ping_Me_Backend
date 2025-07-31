@@ -5,7 +5,6 @@ Includes custom permissions and API endpoints for listing, retrieving,
 updating, and deleting messages in conversations.
 """
 
-from django.core.cache import cache
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 
@@ -42,7 +41,6 @@ class MessageViewSet(viewsets.ViewSet):
     Provides list, retrieve, partial update, and delete actions for messages.
     """
     permission_classes = [permissions.IsAuthenticated, IsSenderOrReadOnly]
-    pagination_class = None  # Disable pagination for messages
 
     def list(self, request):
         """
@@ -56,17 +54,10 @@ class MessageViewSet(viewsets.ViewSet):
         """
         channel_id = request.query_params.get("channel_id")
         conversation = ConversationModel.objects.filter(channel_id=channel_id).select_related().first()
-        cache_key = f'messages_{channel_id}'
-        cached_messages = cache.get(cache_key)
         if conversation:
-            if cached_messages is None:
-                messages = conversation.messages.select_related("conversation").select_related("sender").all()
-                serializer = MessageSerializer(messages, many=True)
-                serialized_data = serializer.data
-                cache.set(cache_key, serialized_data, timeout=120)
-                return Response(serialized_data)
-            else:
-                return Response(cached_messages)
+            messages = conversation.messages.select_related("conversation").select_related("sender").all()
+            serializer = MessageSerializer(messages, many=True)
+            return Response(serializer.data)
         return Response([])
 
     def retrieve(self, request, pk=None):

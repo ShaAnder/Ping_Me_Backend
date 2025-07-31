@@ -144,24 +144,6 @@ CHANNEL_LAYERS = {
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
 ASGI_APPLICATION = "ping_me_api.asgi.application"
 
-# Caching information via Redis (using standard redis client)
-redis_url = os.environ.get('REDIS_URL')
-if redis_url:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-            'LOCATION': redis_url,
-        }
-    }
-else:
-    # Fallback to local memory cache if Redis URL is not available
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake',
-        }
-    }
-
 # Database configuration
 if os.environ.get("DEV"):
     DATABASES = {
@@ -216,8 +198,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',  
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 20,
 }
 
 # drf-spectacular (OpenAPI/Swagger) settings
