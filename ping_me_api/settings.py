@@ -144,16 +144,23 @@ CHANNEL_LAYERS = {
 WSGI_APPLICATION = "ping_me_api.wsgi.application"
 ASGI_APPLICATION = "ping_me_api.asgi.application"
 
-# Caching information via redis
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/1'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+# Caching information via Redis (using standard redis client)
+redis_url = os.environ.get('REDIS_URL')
+if redis_url:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': redis_url,
         }
     }
-}
+else:
+    # Fallback to local memory cache if Redis URL is not available
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
+        }
+    }
 
 # Database configuration
 if os.environ.get("DEV"):
