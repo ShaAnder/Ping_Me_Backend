@@ -10,6 +10,7 @@ import os
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.core.cache import cache
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
@@ -270,5 +271,10 @@ class AccountViewSet(viewsets.ViewSet):
         """
         account = request.user.account
         servers = account.servers.select_related("owner", "category").prefetch_related("members", "channel_server").all()
+        cache_key = f'user_{account.id}_servers'
+        servers = cache.get(cache_key)
+        if servers is None:
+            servers = list(account.servers.select_related("owner", "category").prefetch_related("members", "channel_server").all())
+            cache.set(cache_key, servers, timeout=300)
         serializer = ServerSerializer(servers, many=True, context={'request': request})
         return Response(serializer.data)

@@ -5,6 +5,7 @@ Provides API endpoints for servers, server categories, and channels,
 including member management and custom filtering.
 """
 
+from django.core.cache import cache
 from django.db.models import Count
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
@@ -61,6 +62,12 @@ class ServerViewSet(viewsets.ModelViewSet):
             QuerySet: The filtered queryset.
         """
         queryset = Server.objects.select_related("owner", "category").prefetch_related("members", "channel_server").all()
+        cache_key = 'server_list'
+        servers = cache.get(cache_key)
+        if servers is None:
+            servers = list(Server.objects.select_related("owner", "category").prefetch_related("members", "channel_server").all())
+            cache.set(cache_key, servers, timeout=300)
+        queryset = Server.objects.filter(id__in=[s.id for s in servers])
         request = self.request
         category = request.query_params.get("category")
         qty = request.query_params.get("qty")
