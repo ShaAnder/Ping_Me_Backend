@@ -62,12 +62,6 @@ class ServerViewSet(viewsets.ModelViewSet):
             QuerySet: The filtered queryset.
         """
         queryset = Server.objects.select_related("owner", "category").prefetch_related("members", "channel_server").all()
-        cache_key = 'server_list'
-        servers = cache.get(cache_key)
-        if servers is None:
-            servers = list(Server.objects.select_related("owner", "category").prefetch_related("members", "channel_server").all())
-            cache.set(cache_key, servers, timeout=300)
-        queryset = Server.objects.filter(id__in=[s.id for s in servers])
         request = self.request
         category = request.query_params.get("category")
         qty = request.query_params.get("qty")
@@ -99,6 +93,34 @@ class ServerViewSet(viewsets.ModelViewSet):
             except ValueError:
                 pass
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        """
+        Override list method to add caching for server list.
+        """
+        # Create cache key based on query parameters to ensure unique caching
+        query_params = request.query_params
+        cache_key_parts = ['servers']
+        for key in ['category', 'by_user', 'mutual_with', 'by_serverid', 'with_num_members', 'qty']:
+            if query_params.get(key):
+                cache_key_parts.append(f"{key}_{query_params.get(key)}")
+        if request.user.is_authenticated:
+            cache_key_parts.append(f"user_{request.user.id}")
+        
+        cache_key = "_".join(cache_key_parts)
+        cached_data = cache.get(cache_key)
+        
+        if cached_data is not None:
+            return Response(cached_data)
+        
+        # Get the normal response
+        response = super().list(request, *args, **kwargs)
+        
+        # Cache the response data
+        if response.status_code == 200:
+            cache.set(cache_key, response.data, timeout=300)
+        
+        return response
 
     def get_serializer_context(self):
         """
