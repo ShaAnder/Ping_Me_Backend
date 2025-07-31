@@ -42,6 +42,7 @@ class MessageViewSet(viewsets.ViewSet):
     Provides list, retrieve, partial update, and delete actions for messages.
     """
     permission_classes = [permissions.IsAuthenticated, IsSenderOrReadOnly]
+    pagination_class = None  # Disable pagination for messages
 
     def list(self, request):
         """
@@ -59,12 +60,13 @@ class MessageViewSet(viewsets.ViewSet):
         cached_messages = cache.get(cache_key)
         if conversation:
             if cached_messages is None:
-                messages = list(conversation.messages.select_related("conversation").select_related("sender").all())
-                cache.set(cache_key, messages, timeout=120)
+                messages = conversation.messages.select_related("conversation").select_related("sender").all()
+                serializer = MessageSerializer(messages, many=True)
+                serialized_data = serializer.data
+                cache.set(cache_key, serialized_data, timeout=120)
+                return Response(serialized_data)
             else:
-                messages = cached_messages
-            serializer = MessageSerializer(messages, many=True)
-            return Response(serializer.data)
+                return Response(cached_messages)
         return Response([])
 
     def retrieve(self, request, pk=None):
