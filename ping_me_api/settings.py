@@ -102,6 +102,7 @@ CLOUDINARY_STORAGE = {
     "api_key": os.environ.get("CLOUDINARY_API_KEY"),
     "api_secret": os.environ.get("CLOUDINARY_API_SECRET"),
     "secure": True,
+    "use_https": True,  # Force HTTPS
 }
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 

@@ -72,7 +72,12 @@ class ChatConsumer(JsonWebsocketConsumer):
 
         # Get sender's Account and avatar image URL
         account = getattr(sender, "account", None)
-        avatar_url = account.image.url if account and account.image else None
+        avatar_url = None
+        if account and account.image:
+            avatar_url = account.image.url
+            # Force HTTPS for Cloudinary URLs
+            if avatar_url.startswith('http://'):
+                avatar_url = avatar_url.replace('http://', 'https://', 1)
         sender_username = account.username if account else sender.username
 
         print("Sender:", sender)

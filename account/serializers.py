@@ -54,7 +54,13 @@ class AccountSerializer(serializers.ModelSerializer):
         Returns:
             str or None: The URL of the image or None if not set.
         """
-        return obj.image.url if obj.image else None
+        if obj.image:
+            url = obj.image.url
+            # Force HTTPS for Cloudinary URLs
+            if url.startswith('http://'):
+                url = url.replace('http://', 'https://', 1)
+            return url
+        return None
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def me(self, request):

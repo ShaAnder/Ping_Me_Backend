@@ -252,6 +252,31 @@ class AccountViewSet(viewsets.ViewSet):
         serializer.save()
         return Response(serializer.data)
     
+    @action(detail=False, methods=['delete'], permission_classes=[IsAuthenticated, IsOwnerOrReadOnly], url_path='delete_me')
+    def delete_me(self, request):
+        """
+        Delete the authenticated user's account and associated user.
+
+        Args:
+            request (Request): The HTTP request.
+
+        Returns:
+            Response: Success message with 204 NO CONTENT status.
+        """
+        user = request.user
+        account = user.account
+        
+        # Delete the account (this will cascade to related objects)
+        account.delete()
+        
+        # Delete the user
+        user.delete()
+        
+        return Response(
+            {"message": "Account successfully deleted"}, 
+            status=status.HTTP_204_NO_CONTENT
+        )
+    
     @action(
         detail=False,
         methods=['get'],

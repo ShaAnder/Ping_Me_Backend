@@ -52,9 +52,17 @@ class ServerSerializer(serializers.ModelSerializer):
         """
         image_urls = {}
         if obj.server_icon:
-            image_urls["server_icon_url"] = obj.server_icon.url
+            url = obj.server_icon.url
+            # Force HTTPS for Cloudinary URLs
+            if url.startswith('http://'):
+                url = url.replace('http://', 'https://', 1)
+            image_urls["server_icon_url"] = url
         if obj.banner_image:
-            image_urls["banner_image_url"] = obj.banner_image.url
+            url = obj.banner_image.url
+            # Force HTTPS for Cloudinary URLs
+            if url.startswith('http://'):
+                url = url.replace('http://', 'https://', 1)
+            image_urls["banner_image_url"] = url
         return image_urls
 
     server_image_urls = serializers.SerializerMethodField()
@@ -122,7 +130,11 @@ class ServerCategorySerializer(serializers.ModelSerializer):
         """
         image = getattr(obj, "category_image", None)
         if image and hasattr(image, "url"):
-            return image.url
+            url = image.url
+            # Force HTTPS for Cloudinary URLs
+            if url.startswith('http://'):
+                url = url.replace('http://', 'https://', 1)
+            return url
         return None
 
     category_icon_url = serializers.SerializerMethodField()
