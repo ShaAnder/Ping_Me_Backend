@@ -17,7 +17,7 @@ As this is a backend site there is no deployed site to visit but you can view th
   * [Planning](#planning)
   * [Data models](#data-models)
   * [API endpoints](#api-endpoints)
-  * [Frameworks, libraries and dependencies](#frameworks--libraries-and-dependencies)
+  * [Frameworks, libraries and dependencies](#frameworks-libraries-and-dependencies)
   * [Testing](#testing)
   * [Bugs](#bugs)
   * [Deployment](#deployment)
@@ -100,6 +100,10 @@ ServerHub is configured to allow requests from all origins, to facilitate future
 https://channels.readthedocs.io/en/latest/
 
 This django add on was our primary means of setting up and maintaining websockets for real time communication coupling this with redis servers from heroku allowed us to create a fully functioning real time application akin to discord
+
+## Testing
+
+Full testing can be found in the testing.md file found [here](https://github.com/ShaAnder/Ping_Me_Backend/blob/main/TESTING.md)
 
 ## Future Features
 
